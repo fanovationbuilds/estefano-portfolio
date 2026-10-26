@@ -27,7 +27,7 @@ const pages = [
     path: "/",
     title: "Estefano | Renovations, carpentry, and restoration in NYC",
     description:
-      "Estefano does full renovations, custom carpentry, and antique wood restoration in New York City. Based in Washington Heights (10032).",
+      "Estefano does full renovations, custom carpentry, and antique wood restoration in New York City.",
     template: "home.html",
     jsonld: true,
   },
@@ -46,7 +46,7 @@ const pages = [
     path: "/renovations/",
     title: "Full renovations in New York City | Estefano",
     description:
-      "Plumbing, electrical, kitchens, bathrooms, framing, and flooring. Renovation work in New York City by Estefano, based in Washington Heights.",
+      "Plumbing, electrical, kitchens, bathrooms, framing, and flooring. Renovation work in New York City by Estefano.",
     template: "renovations.html",
   },
   {
@@ -71,9 +71,9 @@ const pages = [
     id: "about",
     out: "about/index.html",
     path: "/about/",
-    title: "About Estefano | Washington Heights, New York City",
+    title: "About Estefano | New York City",
     description:
-      "Estefano is based in Washington Heights (10032) and takes renovation, carpentry, and restoration jobs across New York City.",
+      "Estefano takes renovation, carpentry, and restoration jobs across New York City.",
     template: "about.html",
   },
   {
@@ -303,19 +303,18 @@ function jsonLd() {
     "@type": "LocalBusiness",
     name: site.name,
     description:
-      "Full renovations, custom carpentry, and antique wood restoration in New York City. Based in Washington Heights.",
+      "Full renovations, custom carpentry, and antique wood restoration in New York City.",
     url: `${origin}/`,
     image: `${origin}/favicon.svg`,
     address: {
       "@type": "PostalAddress",
       addressLocality: "New York",
       addressRegion: site.region,
-      postalCode: site.postalCode,
       addressCountry: "US",
     },
     areaServed: {
       "@type": "City",
-      name: "New York City",
+      name: site.city,
     },
     hasOfferCatalog: {
       "@type": "OfferCatalog",
@@ -396,7 +395,7 @@ function layout(page, body) {
     <div class="wrap mast__inner">
       <div class="brand">
         <a class="wordmark" href="${href("/")}">Estefano</a>
-        <p class="brand__place">Washington Heights, New York City</p>
+        <p class="brand__place">New York City</p>
       </div>
       <nav class="nav" aria-label="Primary">
         <ul class="nav__list">
@@ -411,7 +410,7 @@ function layout(page, body) {
   <footer class="foot">
     <div class="wrap">
       <p class="foot__name">Estefano</p>
-      <p>Washington Heights, New York City 10032. Service area: New York City.</p>
+      <p>Service area: NYC.</p>
       <dl class="contact">
         <div><dt>Phone</dt><dd class="todo">TODO</dd></div>
         <div><dt>Email</dt><dd class="todo">TODO</dd></div>

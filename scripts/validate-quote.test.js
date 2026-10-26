@@ -8,7 +8,7 @@ const valid = {
   email: "ada@example.com",
   jobType: "carpentry",
   size: "single-piece",
-  location: "Washington Heights",
+  location: "Brooklyn",
   timeline: "This spring",
   message: "One bathroom vanity cabinet, paint to match the existing trim.",
 };

@@ -76,6 +76,9 @@ for (const [rel, html] of htmlByRel) {
   for (const banned of ["fonts.googleapis.com", "googletagmanager", "google-analytics", "facebook.net", "hotjar"]) {
     if (html.includes(banned)) fail(`${rel} includes ${banned}`);
   }
+  for (const banned of ["Washington Heights", "Upper Manhattan", "10032"]) {
+    if (html.includes(banned)) fail(`${rel} still mentions ${banned}`);
+  }
 
   const attrs = html.matchAll(/(?:href|src)="([^"]+)"/g);
   for (const match of attrs) {
@@ -112,12 +115,18 @@ else {
   const data = JSON.parse(ldMatch[1]);
   if (data["@type"] !== "LocalBusiness") fail("JSON-LD @type is not LocalBusiness");
   const address = data.address || {};
-  if (address.postalCode !== "10032" || address.addressRegion !== "NY") fail("JSON-LD address is not ZIP 10032, NY");
-  if ("streetAddress" in address) fail("JSON-LD includes a street address");
+  if (address.addressRegion !== "NY" || address.addressLocality !== "New York") {
+    fail("JSON-LD address should be New York, NY, with no narrower place");
+  }
+  if ("postalCode" in address || "streetAddress" in address) fail("JSON-LD includes a street or postal code");
   for (const key of ["telephone", "priceRange", "aggregateRating", "review"]) {
     if (key in data) fail(`JSON-LD includes ${key}`);
   }
   if (data.areaServed?.name !== "New York City") fail("JSON-LD areaServed is not New York City");
+  const packed = JSON.stringify(data);
+  for (const banned of ["10032", "Washington Heights", "Upper Manhattan"]) {
+    if (packed.includes(banned)) fail(`JSON-LD still mentions ${banned}`);
+  }
   const services = data.hasOfferCatalog?.itemListElement || [];
   if (services.length !== 3) fail("JSON-LD should list three services");
   const restoration = JSON.stringify(services);
