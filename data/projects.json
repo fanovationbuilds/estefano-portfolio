@@ -1,0 +1,73 @@
+{
+  "projects": [
+    {
+      "id": "kitchen-renovation",
+      "title": "Kitchen renovation",
+      "service": "renovation",
+      "featured": true,
+      "summary": "Placeholder for a kitchen renovation: plumbing, electrical, cabinets, and finishes. Replace this text with the real job.",
+      "beforeAlt": "Placeholder graphic labeled Before for a kitchen renovation. It is not a photograph.",
+      "afterAlt": "Placeholder graphic labeled After for a kitchen renovation. It is not a photograph."
+    },
+    {
+      "id": "bathroom-renovation",
+      "title": "Bathroom renovation",
+      "service": "renovation",
+      "summary": "Placeholder for a bathroom renovation. Replace this text with the real job.",
+      "beforeAlt": "Placeholder graphic labeled Before for a bathroom renovation. It is not a photograph.",
+      "afterAlt": "Placeholder graphic labeled After for a bathroom renovation. It is not a photograph."
+    },
+    {
+      "id": "flooring-and-framing",
+      "title": "Flooring and framing",
+      "service": "renovation",
+      "summary": "Placeholder for flooring and framing work. Replace this text with the real job.",
+      "beforeAlt": "Placeholder graphic labeled Before for flooring and framing. It is not a photograph.",
+      "afterAlt": "Placeholder graphic labeled After for flooring and framing. It is not a photograph."
+    },
+    {
+      "id": "kitchen-cabinets",
+      "title": "Kitchen cabinets",
+      "service": "carpentry",
+      "featured": true,
+      "summary": "Placeholder for a run of kitchen cabinets. Replace this text with the real job.",
+      "beforeAlt": "Placeholder graphic labeled Before for kitchen cabinets. It is not a photograph.",
+      "afterAlt": "Placeholder graphic labeled After for kitchen cabinets. It is not a photograph."
+    },
+    {
+      "id": "closet-built-in",
+      "title": "Closet built-in",
+      "service": "carpentry",
+      "summary": "Placeholder for a closet built-in. Replace this text with the real job.",
+      "beforeAlt": "Placeholder graphic labeled Before for a closet built-in. It is not a photograph.",
+      "afterAlt": "Placeholder graphic labeled After for a closet built-in. It is not a photograph."
+    },
+    {
+      "id": "interior-door",
+      "title": "Interior door",
+      "service": "carpentry",
+      "summary": "Placeholder for a door. Replace this text with the real job.",
+      "beforeAlt": "Placeholder graphic labeled Before for an interior door. It is not a photograph.",
+      "afterAlt": "Placeholder graphic labeled After for an interior door. It is not a photograph."
+    },
+    {
+      "id": "antique-table",
+      "title": "Antique table",
+      "service": "restoration",
+      "featured": true,
+      "apprenticeship": true,
+      "summary": "Placeholder for a table: joints, missing wood, and the finish. Replace this text with the real piece from the apprenticeship.",
+      "beforeAlt": "Placeholder graphic labeled Before for an antique table restored as an apprentice at Vollana Antiques. It is not a photograph.",
+      "afterAlt": "Placeholder graphic labeled After for an antique table restored as an apprentice at Vollana Antiques. It is not a photograph."
+    },
+    {
+      "id": "antique-case",
+      "title": "Antique case piece",
+      "service": "restoration",
+      "apprenticeship": true,
+      "summary": "Placeholder for a case piece: structure and finish. Replace this text with the real piece from the apprenticeship.",
+      "beforeAlt": "Placeholder graphic labeled Before for an antique case piece restored as an apprentice at Vollana Antiques. It is not a photograph.",
+      "afterAlt": "Placeholder graphic labeled After for an antique case piece restored as an apprentice at Vollana Antiques. It is not a photograph."
+    }
+  ]
+}
