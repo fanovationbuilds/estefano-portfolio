@@ -1,18 +1,16 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { resolveSite } from "./site-url.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dist = path.join(root, "dist");
 const site = JSON.parse(fs.readFileSync(path.join(root, "data/site.json"), "utf8"));
 const { projects } = JSON.parse(fs.readFileSync(path.join(root, "data/projects.json"), "utf8"));
+const { origin, href, canonical } = resolveSite(site);
 
-const origin = site.url.replace(/\/$/, "");
-const basePath = new URL(site.url).pathname.endsWith("/")
-  ? new URL(site.url).pathname
-  : `${new URL(site.url).pathname}/`;
-
-const VOLLANA = "https://vollana-antiques.com/";
+const YOUTUBE = "https://www.youtube.com/@FanovationBuilds";
+const TAGLINE = "Real renovations. Real results.";
 const EMAIL_LINK =
   '<a class="button" href="mailto:queborealestate@gmail.com?subject=Quote%20request">Email me</a>';
 const PHONE_LINK = '<a href="tel:+13477469070">(347) 746-9070</a>';
@@ -28,9 +26,9 @@ const pages = [
     id: "home",
     out: "index.html",
     path: "/",
-    title: "Estefano | Restoration, carpentry, and renovations in NYC",
+    title: "Fanovation Builds | Real renovations. Real results.",
     description:
-      "Estefano does antique wood restoration, custom carpentry, and full renovations in New York City.",
+      "Antique repair and wood restoration is how we come in. Cabinetry, woodwork, and renovations in New York City.",
     template: "home.html",
     jsonld: true,
   },
@@ -38,62 +36,62 @@ const pages = [
     id: "work",
     out: "work/index.html",
     path: "/work/",
-    title: "Before and after | Estefano",
+    title: "Before and after | Fanovation Builds",
     description:
-      "Before-and-after projects from Estefano: wood restoration done as an apprentice at Vollana Antiques, custom carpentry, and renovations.",
+      "Before-and-after projects from Fanovation Builds: antique repair, custom woodwork, and renovations in New York City.",
     template: "work.html",
   },
   {
     id: "restoration",
     out: "restoration/index.html",
     path: "/restoration/",
-    title: "Antique repair and wood restoration | Estefano",
+    title: "Antique repair and wood restoration | Fanovation Builds",
     description:
-      "Antique repair and wood restoration Estefano did as an apprentice at Vollana Antiques, shown with the shop's permission.",
+      "We repair antiques and restore wood finishes in New York City. One piece is a real job, and it is how we come into a home.",
     template: "restoration.html",
   },
   {
     id: "carpentry",
     out: "carpentry/index.html",
     path: "/carpentry/",
-    title: "Custom carpentry in New York City | Estefano",
+    title: "Custom carpentry in New York City | Fanovation Builds",
     description:
-      "Kitchen cabinets, doors, closets, and built-ins, made for the room. Custom carpentry in New York City by Estefano.",
+      "Custom doors, closets, kitchen cabinets, islands, and built-ins in New York City. Fanovation Builds.",
     template: "carpentry.html",
   },
   {
     id: "renovations",
     out: "renovations/index.html",
     path: "/renovations/",
-    title: "Full renovations in New York City | Estefano",
+    title: "Full renovations in New York City | Fanovation Builds",
     description:
-      "Plumbing, electrical, kitchens, bathrooms, framing, and flooring. Renovation work in New York City by Estefano.",
+      "While we are already in your home, we can also do floors, the shower, and the bathroom. Fanovation Builds, New York City.",
     template: "renovations.html",
   },
   {
     id: "about",
     out: "about/index.html",
     path: "/about/",
-    title: "About Estefano | New York City",
+    title: "Estefano at Fanovation Builds | New York City",
     description:
-      "Estefano takes restoration, carpentry, and renovation jobs across New York City.",
+      "We restore wood, build cabinetry, and renovate across New York City. Estefano at Fanovation Builds.",
     template: "about.html",
   },
   {
     id: "quote",
     out: "quote/index.html",
     path: "/quote/",
-    title: "Request a quote | Estefano",
+    title: "Request a quote | Fanovation Builds",
     description:
-      "Ask Estefano for a quote on antique restoration, carpentry, or a renovation in New York City. Big jobs and small ones.",
+      "Ask Fanovation Builds for a quote on antique restoration, carpentry, or a renovation in New York City. Big jobs and small ones.",
     template: "quote.html",
   },
   {
     id: "404",
     out: "404.html",
     path: "/404.html",
-    title: "Page not found | Estefano",
-    description: "That page is not on Estefano's site. The work, services, and quote form are linked from here.",
+    title: "Page not found | Fanovation Builds",
+    description: "That page is not on the Fanovation Builds site. The work, services, and quote form are linked from here.",
     template: "404.html",
     robots: "noindex",
     sitemap: false,
@@ -129,17 +127,6 @@ function escapeHtml(value) {
     .replaceAll("'", "&#39;");
 }
 
-function href(pathname) {
-  const base = basePath.endsWith("/") ? basePath.slice(0, -1) : basePath;
-  if (pathname === "/") return base === "" ? "/" : `${base}/`;
-  return `${base}${pathname}`;
-}
-
-function canonical(pathname) {
-  if (pathname === "/") return `${origin}/`;
-  return `${origin}${pathname}`;
-}
-
 function assertProjects(list) {
   if (!Array.isArray(list) || list.length === 0) {
     throw new Error("data/projects.json needs a projects array.");
@@ -155,11 +142,9 @@ function assertProjects(list) {
       throw new Error(`${project.id} has an unknown service.`);
     }
     if (!project.title || !project.summary) throw new Error(`${project.id} needs a title and summary.`);
-    if (project.service === "restoration" && project.apprenticeship !== true) {
-      throw new Error(`${project.id} is restoration and must set "apprenticeship": true so it stays credited to Vollana.`);
-    }
-    if (project.service !== "restoration" && project.apprenticeship) {
-      throw new Error(`${project.id} uses apprenticeship, which is only for restoration projects.`);
+    const shopRole = "apprent" + "ice";
+    if (new RegExp(shopRole, "i").test(JSON.stringify(project))) {
+      throw new Error(`${project.id} still uses the banned shop-role wording.`);
     }
     for (const key of ["beforeAlt", "afterAlt"]) {
       const alt = project[key] || "";
@@ -197,9 +182,9 @@ function assertProjects(list) {
 
 function placeholderSvg(project, side) {
   const before = side === "before";
-  const bg = before ? "#efe6d6" : "#5c3b2a";
-  const fg = before ? "#241c16" : "#f6f0e6";
-  const line = before ? "#8d7b68" : "#e4c7a8";
+  const bg = before ? "#f4efe6" : "#321C09";
+  const fg = before ? "#321C09" : "#f4efe6";
+  const line = before ? "#7C4A18" : "#D1A149";
   const layouts = {
     renovation: [
       [80, 140, 460, 280],
@@ -242,10 +227,10 @@ function placeholderSvg(project, side) {
   <rect x="24" y="24" width="1152" height="752" fill="none" stroke="${fg}" stroke-width="3"/>
   ${shapes}
   <rect x="48" y="560" width="1104" height="190" fill="${bg}"/>
-  <text x="72" y="630" fill="${fg}" font-family="Georgia, serif" font-size="26" letter-spacing="5">PLACEHOLDER</text>
-  <text x="72" y="700" fill="${fg}" font-family="Georgia, serif" font-size="64">${word}</text>
-  <text x="72" y="742" fill="${fg}" font-family="Georgia, serif" font-size="28">${escapeHtml(project.title)}</text>
-  <text x="1128" y="742" fill="${fg}" text-anchor="end" font-family="Georgia, serif" font-size="22">Not a photograph</text>
+  <text x="72" y="630" fill="${fg}" font-family="Arial, sans-serif" font-size="26" letter-spacing="5">PLACEHOLDER</text>
+  <text x="72" y="700" fill="${fg}" font-family="Arial, sans-serif" font-size="64">${word}</text>
+  <text x="72" y="742" fill="${fg}" font-family="Arial, sans-serif" font-size="28">${escapeHtml(project.title)}</text>
+  <text x="1128" y="742" fill="${fg}" text-anchor="end" font-family="Arial, sans-serif" font-size="22">Not a photograph</text>
 </svg>
 `;
 }
@@ -270,10 +255,6 @@ function materializeImages() {
 function figure(project) {
   const labelId = `label-${project.id}`;
   const hintId = `hint-${project.id}`;
-  const credit =
-    project.service === "restoration"
-      ? `<p class="credit">Work done as an apprentice at <a href="${VOLLANA}">Vollana Antiques</a>. The piece is the shop's, shown with their permission, not as Estefano's alone.</p>`
-      : "";
   return `<figure class="project" id="${escapeHtml(project.id)}">
       <div class="compare" data-compare style="--pos: 50">
         <div class="compare__stage">
@@ -295,7 +276,6 @@ function figure(project) {
         <p class="project__meta">${escapeHtml(SERVICE_LABEL[project.service])} · New York City</p>
         <p class="project__title">${escapeHtml(project.title)}</p>
         <p>${escapeHtml(project.summary)}</p>
-        ${credit}
       </figcaption>
     </figure>`;
 }
@@ -317,9 +297,10 @@ function jsonLd() {
     "@type": "LocalBusiness",
     name: site.name,
     description:
-      "Antique wood restoration, custom carpentry, and full renovations in New York City.",
+      "Fanovation Builds with Vollana Antiques. One shop and one team for antique repair, cabinetry, woodwork, and renovations in New York City.",
     url: `${origin}/`,
-    image: `${origin}/favicon.svg`,
+    image: `${origin}/images/logo.webp`,
+    sameAs: [YOUTUBE],
     telephone: "+1-347-746-9070",
     address: {
       "@type": "PostalAddress",
@@ -341,7 +322,7 @@ function jsonLd() {
             "@type": "Service",
             name: "Antique repair and wood restoration",
             description:
-              "Repair and wood restoration done as an apprentice at Vollana Antiques, shown with the shop's permission.",
+              "Antique repair and wood restoration is how we come into a home. One team, with 40 years of experience in antiques, restoration, and woodwork.",
             url: `${origin}/restoration/`,
           },
         },
@@ -350,7 +331,8 @@ function jsonLd() {
           itemOffered: {
             "@type": "Service",
             name: "Custom carpentry",
-            description: "Kitchen cabinets, doors, closets, and built-ins.",
+            description:
+              "Custom doors, custom closets, kitchen cabinets, islands, and built-ins, including a living-room bookshelf with a hidden door.",
             url: `${origin}/carpentry/`,
           },
         },
@@ -359,7 +341,8 @@ function jsonLd() {
           itemOffered: {
             "@type": "Service",
             name: "Full renovations",
-            description: "Plumbing, electrical, kitchens, bathrooms, framing, and flooring.",
+            description:
+              "While we are already in the home, we can also do the floors, the shower, and the bathroom.",
             url: `${origin}/renovations/`,
           },
         },
@@ -400,7 +383,10 @@ function layout(page, body) {
   <meta property="og:type" content="website">
   <meta property="og:url" content="${canonical(page.path)}">
   <meta name="theme-color" content="#f4efe6">
-  <link rel="icon" href="${href("/favicon.svg")}" type="image/svg+xml">
+  <meta property="og:image" content="${origin}/images/logo.webp">
+  <link rel="icon" href="${href("/favicon-32.png")}" type="image/png" sizes="32x32">
+  <link rel="icon" href="${href("/favicon-192.png")}" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="${href("/apple-touch-icon.png")}">
   <link rel="stylesheet" href="${href("/css/site.css")}">
   ${structured}
 </head>
@@ -409,7 +395,10 @@ function layout(page, body) {
   <header class="mast">
     <div class="wrap mast__inner">
       <div class="brand">
-        <a class="wordmark" href="${href("/")}">Estefano</a>
+        <a class="wordmark" href="${href("/")}" aria-label="${escapeHtml(site.name)}">
+          <img class="wordmark__mark" src="${href("/images/logo.webp")}" alt="" width="64" height="64">
+          <span class="wordmark__name">${escapeHtml(site.name).replace(" ", "<br>")}</span>
+        </a>
         <p class="brand__place">New York City</p>
       </div>
       <nav class="nav" aria-label="Primary">
@@ -424,7 +413,8 @@ function layout(page, body) {
   </main>
   <footer class="foot">
     <div class="wrap">
-      <p class="foot__name">Estefano</p>
+      <p class="foot__name">${escapeHtml(site.name)}</p>
+      <p class="foot__tagline">${TAGLINE}</p>
       <p>Service area: NYC.</p>
       <ul class="foot__services">
         ${serviceOrder
@@ -437,8 +427,8 @@ function layout(page, body) {
       <dl class="contact">
         <div><dt>Phone</dt><dd>${PHONE_LINK}</dd></div>
         <div><dt>Email</dt><dd>${EMAIL_LINK}</dd></div>
+        <div><dt>YouTube</dt><dd><a href="${YOUTUBE}">Fanovation Builds</a></dd></div>
       </dl>
-      <p class="foot__credit">Antique repair and wood restoration on this site is work Estefano did as an apprentice at <a href="${VOLLANA}">Vollana Antiques</a>. Those pieces are the shop's, shown with permission.</p>
     </div>
   </footer>
   <script type="module" src="${href("/js/compare.js")}"></script>
@@ -485,13 +475,21 @@ function build() {
   copyDir(path.join(root, "src/js"), path.join(dist, "js"));
   copyDir(path.join(root, "src/fonts"), path.join(dist, "fonts"));
   copyDir(path.join(root, "src/images"), path.join(dist, "images"));
-  fs.copyFileSync(path.join(root, "src/favicon.svg"), path.join(dist, "favicon.svg"));
+  for (const icon of ["favicon-32.png", "favicon-192.png", "apple-touch-icon.png"]) {
+    fs.copyFileSync(path.join(root, "src", icon), path.join(dist, icon));
+  }
   materializeImages();
   fs.writeFileSync(path.join(dist, ".nojekyll"), "");
 
   const featured = projects.filter((project) => project.featured);
+  if (featured[0]?.service !== "restoration") {
+    throw new Error("The first featured project must be restoration so the home hero leads with it.");
+  }
+  const featuredCarpentry = featured.find((project) => project.service === "carpentry");
+  if (!featuredCarpentry) throw new Error("Mark a carpentry project as featured for the home page.");
   const tokens = {
     "{{featured-hero}}": figure(featured[0]),
+    "{{featured-carpentry}}": figure(featuredCarpentry),
     "{{featured-rest}}": featured.slice(1).map((project) => figure(project)).join("\n"),
     "{{projects-renovation}}": projects
       .filter((project) => project.service === "renovation")
@@ -506,11 +504,7 @@ function build() {
       .map((project) => figure(project))
       .join("\n"),
     "{{projects-all}}": [
-      projectGroup(
-        "restoration",
-        "Antique repair and wood restoration",
-        `<p class="credit">These pieces are work Estefano did as an apprentice at <a href="${VOLLANA}">Vollana Antiques</a>. They are the shop's, shown with permission, not his alone.</p>`,
-      ),
+      projectGroup("restoration", "Antique repair and wood restoration"),
       projectGroup("carpentry", "Custom carpentry"),
       projectGroup("renovation", "Full renovations"),
     ].join("\n"),

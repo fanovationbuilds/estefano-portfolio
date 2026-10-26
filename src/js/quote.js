@@ -227,7 +227,7 @@ if (form) {
       form.reset();
       listPhotoNames(form);
       applyErrors({});
-      setStatus("Sent. He will reply to the phone or email you entered. This page does not show a price.", "ok");
+      setStatus("Sent. We will reply to the phone or email you entered. This page does not show a price.", "ok");
     } catch (error) {
       const detail = error && error.message ? error.message : "The request failed.";
       setStatus(

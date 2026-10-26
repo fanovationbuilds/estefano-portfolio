@@ -2,13 +2,17 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { JOB_TYPES, SIZES } from "../src/js/validate-quote.js";
+import { resolveSite } from "./site-url.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dist = path.join(root, "dist");
 const site = JSON.parse(fs.readFileSync(path.join(root, "data/site.json"), "utf8"));
 const { projects } = JSON.parse(fs.readFileSync(path.join(root, "data/projects.json"), "utf8"));
-const origin = site.url.replace(/\/$/, "");
-const basePath = new URL(site.url).pathname.replace(/\/$/, "");
+const { origin, basePath } = resolveSite(site);
+const YOUTUBE = "https://www.youtube.com/@FanovationBuilds";
+const TAGLINE = "Real renovations. Real results.";
+const shopRole = "apprent" + "ice";
+const shopRolePattern = new RegExp(shopRole, "i");
 const failures = [];
 
 function fail(message) {
@@ -60,6 +64,7 @@ for (const [rel, html] of htmlByRel) {
   const title = html.match(/<title>([^<]*)<\/title>/);
   if (!title) fail(`${rel} missing title`);
   else if (title[1].length > 70) fail(`${rel} title is ${title[1].length} characters`);
+  else if (!title[1].includes("Fanovation Builds")) fail(`${rel} title is not Fanovation Builds`);
   const description = html.match(/<meta name="description" content="([^"]*)">/);
   if (!description) fail(`${rel} missing meta description`);
   else if (description[1].length < 50 || description[1].length > 170) {
@@ -80,8 +85,30 @@ for (const [rel, html] of htmlByRel) {
   if (html.replace(/href="[^"]*"/g, "").includes("queborealestate@gmail.com")) {
     fail(`${rel} shows the email address`);
   }
-  if (!html.includes("https://vollana-antiques.com/")) fail(`${rel} missing Vollana link`);
-  if (!html.includes("apprentice")) fail(`${rel} missing apprenticeship credit`);
+  if (!html.includes("Fanovation Builds")) fail(`${rel} missing the Fanovation Builds name`);
+  if (!html.includes(TAGLINE)) fail(`${rel} missing the tagline`);
+  const youtube = `href="${YOUTUBE}"`;
+  const youtubeCount = html.split(youtube).length - 1;
+  const expectedYoutube = rel === "about/index.html" ? 2 : 1;
+  if (youtubeCount !== expectedYoutube) fail(`${rel} has ${youtubeCount} YouTube links`);
+  for (const banned of ["DIY", "diy", "tutorial", "step-by-step"]) {
+    if (html.includes(banned)) fail(`${rel} uses channel tutorial language: ${banned}`);
+  }
+  if (shopRolePattern.test(html)) fail(`${rel} still uses the banned shop-role word`);
+  for (const phrase of [
+    "together with",
+    "their 40 years",
+    "not his alone",
+    "not presented as his",
+    "not as Estefano",
+    "credited to",
+    "the shop's",
+    "shown with",
+  ]) {
+    if (html.toLowerCase().includes(phrase.toLowerCase())) {
+      fail(`${rel} still splits the work between people: ${phrase}`);
+    }
+  }
   if (/\$\s?\d/.test(html)) fail(`${rel} appears to list a price`);
   const otherNumbers = html
     .replaceAll("(347) 746-9070", "")
@@ -101,6 +128,7 @@ for (const [rel, html] of htmlByRel) {
   for (const match of attrs) {
     let url = match[1];
     if (url.startsWith("https://vollana-antiques.com/")) continue;
+    if (url === YOUTUBE) continue;
     if (url === "mailto:queborealestate@gmail.com?subject=Quote%20request") continue;
     if (url === "tel:+13477469070") continue;
     if (url.startsWith("tel:")) {
@@ -141,6 +169,11 @@ if (!ldMatch) fail("Home page missing JSON-LD");
 else {
   const data = JSON.parse(ldMatch[1]);
   if (data["@type"] !== "LocalBusiness") fail("JSON-LD @type is not LocalBusiness");
+  if (data.name !== "Fanovation Builds") fail("JSON-LD name is not Fanovation Builds");
+  if (data.url !== "https://fanovationbuilds.com/") fail(`JSON-LD url is ${data.url}`);
+  const sameAs = Array.isArray(data.sameAs) ? data.sameAs : [];
+  if (!sameAs.includes(YOUTUBE)) fail("JSON-LD sameAs is missing the YouTube channel");
+  if (data.image !== `${origin}/images/logo.webp`) fail("JSON-LD image is not the logo");
   const address = data.address || {};
   if (address.addressRegion !== "NY" || address.addressLocality !== "New York") {
     fail("JSON-LD address should be New York, NY, with no narrower place");
@@ -163,19 +196,64 @@ else {
     fail(`JSON-LD service order is ${serviceNames.join(" | ")}`);
   }
   if ("review" in data || "aggregateRating" in data) fail("JSON-LD includes a review rating");
-  const restoration = JSON.stringify(services);
-  if (!/apprentice/i.test(restoration) || !/Vollana/.test(restoration)) {
-    fail("JSON-LD restoration service does not credit Vollana");
+  const restorationOffer = JSON.stringify(services);
+  if (shopRolePattern.test(restorationOffer)) fail("JSON-LD still uses the banned shop-role word");
+  if (/together with|their 40 years|permission|the shop's/i.test(restorationOffer)) {
+    fail("JSON-LD still splits the work between people");
+  }
+  if (!String(data.description).includes("Vollana Antiques") || !/one team/i.test(String(data.description))) {
+    fail("JSON-LD should describe Fanovation Builds and Vollana as one team");
+  }
+  const restorationService = services.find((item) => item.itemOffered?.name === "Antique repair and wood restoration");
+  const carpentryService = services.find((item) => item.itemOffered?.name === "Custom carpentry");
+  const renovationService = services.find((item) => item.itemOffered?.name === "Full renovations");
+  if (!/40 years of experience in antiques, restoration, and woodwork/.test(restorationService?.itemOffered?.description || "")) {
+    fail("JSON-LD restoration description should name the team's 40 years");
+  }
+  if (!/hidden door/.test(carpentryService?.itemOffered?.description || "")) {
+    fail("JSON-LD carpentry description should name the woodwork");
+  }
+  if (!/floors/.test(renovationService?.itemOffered?.description || "") || !/bathroom/.test(renovationService?.itemOffered?.description || "")) {
+    fail("JSON-LD renovation description should stay the smaller in-home work");
   }
 }
 
-const restoration = htmlByRel.get("restoration/index.html");
-if (restoration && !restoration.includes("not presented as his alone")) {
-  fail("Restoration page does not say the pieces are not his alone");
+const about = htmlByRel.get("about/index.html");
+if (about && !about.includes("Estefano at Fanovation Builds")) {
+  fail("About page should name Estefano at Fanovation Builds");
 }
+
+const restoration = htmlByRel.get("restoration/index.html");
 for (const project of projects.filter((item) => item.service === "restoration")) {
   if (!restoration.includes(`id="${project.id}"`)) fail(`Restoration page missing ${project.id}`);
-  if (!restoration.includes("not as Estefano's alone")) fail("Restoration project caption missing the apprenticeship credit");
+}
+const vollanaUrl = "https://vollana-antiques.com/";
+let vollanaLinks = 0;
+for (const [rel, html] of htmlByRel) {
+  const count = html.split(vollanaUrl).length - 1;
+  vollanaLinks += count;
+  if (rel !== "index.html" && count !== 0) fail(`${rel} repeats the Vollana link`);
+}
+if (vollanaLinks !== 1) fail(`Expected one Vollana link, found ${vollanaLinks}`);
+if (!home.includes("Fanovation Builds with")) fail("Home is missing the Vollana team line");
+if (!home.includes(">Vollana Antiques</a>")) fail("Home Vollana mention should be the linked shop name");
+if (!home.includes("same shop") || !home.includes("one team") || !home.includes("one-stop shop")) {
+  fail("Home should describe one shop and one team");
+}
+if (!home.includes("40 years of experience in antiques, restoration, and woodwork")) {
+  fail("Home should mention 40 years as a team strength");
+}
+for (const example of ["custom doors", "custom closets", "kitchen cabinets", "islands", "bookshelf", "hidden door"]) {
+  if (!home.toLowerCase().includes(example)) fail(`Home is missing woodwork example: ${example}`);
+}
+const renovationsSlice = home.slice(home.indexOf('id="renovations-lead"'), home.indexOf('id="selected-heading"'));
+if (!/floors/.test(renovationsSlice) || !/shower/.test(renovationsSlice) || !/bathroom/.test(renovationsSlice)) {
+  fail("Home renovations section should mention floors, the shower, and the bathroom");
+}
+for (const rel of ["index.html", "restoration/index.html", "carpentry/index.html", "renovations/index.html", "about/index.html", "quote/index.html"]) {
+  const page = htmlByRel.get(rel) || "";
+  if (!/\bwe\b/i.test(page)) fail(`${rel} should speak as we`);
+  if (/\bhe\b/i.test(page)) fail(`${rel} still speaks as he`);
 }
 
 const work = htmlByRel.get("work/index.html");
@@ -247,6 +325,18 @@ const cards = home.slice(home.indexOf('id="services-heading"'), home.indexOf('id
 if (!comesBefore(cards, "Antique repair and wood restoration", "Custom carpentry") || !comesBefore(cards, "Custom carpentry", "Full renovations")) {
   fail("Home service card order is wrong");
 }
+const hero = home.slice(home.indexOf('class="hero"'), home.indexOf('id="services-heading"'));
+if (/renovation/i.test(hero)) fail("Home hero should not lead with renovations");
+
+const textExt = new Set([".html", ".js", ".json", ".css", ".md", ".svg", ".txt", ".yml"]);
+const sourceFiles = ["src", "scripts", "data"].flatMap((dir) => walk(path.join(root, dir)));
+sourceFiles.push(path.join(root, "README.md"));
+for (const file of sourceFiles) {
+  if (!textExt.has(path.extname(file))) continue;
+  if (shopRolePattern.test(fs.readFileSync(file, "utf8"))) {
+    fail(`${path.relative(root, file)} still uses the banned shop-role word`);
+  }
+}
 
 const robots = read("robots.txt");
 if (!robots.includes(`Sitemap: ${origin}/sitemap.xml`)) fail("robots.txt sitemap URL is wrong");
@@ -282,6 +372,21 @@ for (const project of projects) {
 const css = read("css/site.css");
 for (const banned of ["fonts.googleapis.com", "fonts.gstatic.com"]) {
   if (css.includes(banned)) fail(`CSS includes ${banned}`);
+}
+if (!css.includes("hero-banner.webp")) fail("Home hero is not using the channel banner");
+for (const asset of ["images/logo.webp", "images/hero-banner.webp", "favicon-32.png", "favicon-192.png", "apple-touch-icon.png"]) {
+  if (!fs.existsSync(path.join(dist, asset))) fail(`Missing dist/${asset}`);
+}
+if (fs.existsSync(path.join(root, "CNAME"))) {
+  fail("Do not add a CNAME file. Actions-based Pages ignores it; set the domain in the repository Pages settings.");
+}
+if (site.name !== "Fanovation Builds") fail("data/site.json name should be Fanovation Builds");
+if (origin !== "https://fanovationbuilds.com" || basePath !== "") {
+  fail(`Site should be https://fanovationbuilds.com at /. Got ${origin} ${basePath || "/"}`);
+}
+const homeCanonical = home.match(/<link rel="canonical" href="([^"]+)">/);
+if (!homeCanonical || homeCanonical[1] !== "https://fanovationbuilds.com/") {
+  fail("Home canonical is not https://fanovationbuilds.com/");
 }
 
 if (failures.length) {

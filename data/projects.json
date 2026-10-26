@@ -5,19 +5,17 @@
       "title": "Antique table",
       "service": "restoration",
       "featured": true,
-      "apprenticeship": true,
-      "summary": "Placeholder for a table: joints, missing wood, and the finish. Replace this text with the real piece from the apprenticeship.",
-      "beforeAlt": "Placeholder graphic labeled Before for an antique table restored as an apprentice at Vollana Antiques. It is not a photograph.",
-      "afterAlt": "Placeholder graphic labeled After for an antique table restored as an apprentice at Vollana Antiques. It is not a photograph."
+      "summary": "Placeholder for a table: joints, missing wood, and the finish. Replace this text with the real piece.",
+      "beforeAlt": "Placeholder graphic labeled Before for an antique table. It is not a photograph.",
+      "afterAlt": "Placeholder graphic labeled After for an antique table. It is not a photograph."
     },
     {
       "id": "antique-case",
       "title": "Antique case piece",
       "service": "restoration",
-      "apprenticeship": true,
-      "summary": "Placeholder for a case piece: structure and finish. Replace this text with the real piece from the apprenticeship.",
-      "beforeAlt": "Placeholder graphic labeled Before for an antique case piece restored as an apprentice at Vollana Antiques. It is not a photograph.",
-      "afterAlt": "Placeholder graphic labeled After for an antique case piece restored as an apprentice at Vollana Antiques. It is not a photograph."
+      "summary": "Placeholder for a case piece: structure and finish. Replace this text with the real piece.",
+      "beforeAlt": "Placeholder graphic labeled Before for an antique case piece. It is not a photograph.",
+      "afterAlt": "Placeholder graphic labeled After for an antique case piece. It is not a photograph."
     },
     {
       "id": "kitchen-cabinets",
