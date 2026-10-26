@@ -13,7 +13,7 @@ const basePath = new URL(site.url).pathname.endsWith("/")
   : `${new URL(site.url).pathname}/`;
 
 const VOLLANA = "https://vollana-antiques.com/";
-const SERVICES = ["renovation", "carpentry", "restoration"];
+const SERVICES = ["restoration", "carpentry", "renovation"];
 const SERVICE_LABEL = {
   renovation: "Full renovation",
   carpentry: "Custom carpentry",
@@ -25,9 +25,9 @@ const pages = [
     id: "home",
     out: "index.html",
     path: "/",
-    title: "Estefano | Renovations, carpentry, and restoration in NYC",
+    title: "Estefano | Restoration, carpentry, and renovations in NYC",
     description:
-      "Estefano does full renovations, custom carpentry, and antique wood restoration in New York City.",
+      "Estefano does antique wood restoration, custom carpentry, and full renovations in New York City.",
     template: "home.html",
     jsonld: true,
   },
@@ -37,26 +37,8 @@ const pages = [
     path: "/work/",
     title: "Before and after | Estefano",
     description:
-      "Before-and-after projects from Estefano: renovations, custom carpentry, and wood restoration done as an apprentice at Vollana Antiques.",
+      "Before-and-after projects from Estefano: wood restoration done as an apprentice at Vollana Antiques, custom carpentry, and renovations.",
     template: "work.html",
-  },
-  {
-    id: "renovations",
-    out: "renovations/index.html",
-    path: "/renovations/",
-    title: "Full renovations in New York City | Estefano",
-    description:
-      "Plumbing, electrical, kitchens, bathrooms, framing, and flooring. Renovation work in New York City by Estefano.",
-    template: "renovations.html",
-  },
-  {
-    id: "carpentry",
-    out: "carpentry/index.html",
-    path: "/carpentry/",
-    title: "Custom carpentry in New York City | Estefano",
-    description:
-      "Kitchen cabinets, doors, closets, and built-ins, made for the room. Custom carpentry in New York City by Estefano.",
-    template: "carpentry.html",
   },
   {
     id: "restoration",
@@ -68,12 +50,30 @@ const pages = [
     template: "restoration.html",
   },
   {
+    id: "carpentry",
+    out: "carpentry/index.html",
+    path: "/carpentry/",
+    title: "Custom carpentry in New York City | Estefano",
+    description:
+      "Kitchen cabinets, doors, closets, and built-ins, made for the room. Custom carpentry in New York City by Estefano.",
+    template: "carpentry.html",
+  },
+  {
+    id: "renovations",
+    out: "renovations/index.html",
+    path: "/renovations/",
+    title: "Full renovations in New York City | Estefano",
+    description:
+      "Plumbing, electrical, kitchens, bathrooms, framing, and flooring. Renovation work in New York City by Estefano.",
+    template: "renovations.html",
+  },
+  {
     id: "about",
     out: "about/index.html",
     path: "/about/",
     title: "About Estefano | New York City",
     description:
-      "Estefano takes renovation, carpentry, and restoration jobs across New York City.",
+      "Estefano takes restoration, carpentry, and renovation jobs across New York City.",
     template: "about.html",
   },
   {
@@ -82,7 +82,7 @@ const pages = [
     path: "/quote/",
     title: "Request a quote | Estefano",
     description:
-      "Ask Estefano for a quote on a renovation, carpentry, or antique restoration job in New York City. Big jobs and small ones.",
+      "Ask Estefano for a quote on antique restoration, carpentry, or a renovation in New York City. Big jobs and small ones.",
     template: "quote.html",
   },
   {
@@ -97,14 +97,25 @@ const pages = [
   },
 ];
 
+const serviceOrder = [
+  { id: "restoration", label: "Restoration", full: "Antique repair and wood restoration" },
+  { id: "carpentry", label: "Carpentry", full: "Custom carpentry" },
+  { id: "renovations", label: "Renovations", full: "Full renovations" },
+];
+
 const nav = [
   { id: "work", label: "Work" },
-  { id: "renovations", label: "Renovations" },
-  { id: "carpentry", label: "Carpentry" },
-  { id: "restoration", label: "Restoration" },
+  ...serviceOrder.map((service) => ({ id: service.id, label: service.label })),
   { id: "about", label: "About" },
   { id: "quote", label: "Request a quote", cta: true },
 ];
+
+const testimonialHtml = `<figure class="testimonial">
+  <blockquote>
+    <p>It is so hard to find people that do wood restoration, thank you so much for your amazing craft and expertise. You made this whole process a great experience.</p>
+  </blockquote>
+  <figcaption>Wood restoration client</figcaption>
+</figure>`;
 
 function escapeHtml(value) {
   return String(value)
@@ -303,7 +314,7 @@ function jsonLd() {
     "@type": "LocalBusiness",
     name: site.name,
     description:
-      "Full renovations, custom carpentry, and antique wood restoration in New York City.",
+      "Antique wood restoration, custom carpentry, and full renovations in New York City.",
     url: `${origin}/`,
     image: `${origin}/favicon.svg`,
     address: {
@@ -324,9 +335,10 @@ function jsonLd() {
           "@type": "Offer",
           itemOffered: {
             "@type": "Service",
-            name: "Full renovations",
-            description: "Plumbing, electrical, kitchens, bathrooms, framing, and flooring.",
-            url: `${origin}/renovations/`,
+            name: "Antique repair and wood restoration",
+            description:
+              "Repair and wood restoration done as an apprentice at Vollana Antiques, shown with the shop's permission.",
+            url: `${origin}/restoration/`,
           },
         },
         {
@@ -342,10 +354,9 @@ function jsonLd() {
           "@type": "Offer",
           itemOffered: {
             "@type": "Service",
-            name: "Antique repair and wood restoration",
-            description:
-              "Repair and wood restoration done as an apprentice at Vollana Antiques, shown with the shop's permission.",
-            url: `${origin}/restoration/`,
+            name: "Full renovations",
+            description: "Plumbing, electrical, kitchens, bathrooms, framing, and flooring.",
+            url: `${origin}/renovations/`,
           },
         },
       ],
@@ -411,6 +422,14 @@ function layout(page, body) {
     <div class="wrap">
       <p class="foot__name">Estefano</p>
       <p>Service area: NYC.</p>
+      <ul class="foot__services">
+        ${serviceOrder
+          .map((service) => {
+            const target = pages.find((page) => page.id === service.id);
+            return `<li><a href="${href(target.path)}">${escapeHtml(service.full)}</a></li>`;
+          })
+          .join("")}
+      </ul>
       <dl class="contact">
         <div><dt>Phone</dt><dd class="todo">TODO</dd></div>
         <div><dt>Email</dt><dd class="todo">TODO</dd></div>
@@ -483,14 +502,15 @@ function build() {
       .map((project) => figure(project))
       .join("\n"),
     "{{projects-all}}": [
-      projectGroup("renovation", "Full renovations"),
-      projectGroup("carpentry", "Custom carpentry"),
       projectGroup(
         "restoration",
         "Antique repair and wood restoration",
         `<p class="credit">These pieces are work Estefano did as an apprentice at <a href="${VOLLANA}">Vollana Antiques</a>. They are the shop's, shown with permission, not his alone.</p>`,
       ),
+      projectGroup("carpentry", "Custom carpentry"),
+      projectGroup("renovation", "Full renovations"),
     ].join("\n"),
+    "{{testimonial}}": testimonialHtml,
   };
 
   for (const page of pages) {

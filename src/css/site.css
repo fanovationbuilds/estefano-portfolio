@@ -393,6 +393,27 @@ main p,
   color: var(--paper);
 }
 
+.testimonial {
+  margin: 2.25rem 0 0;
+  max-width: var(--measure);
+}
+
+.testimonial blockquote {
+  margin: 0;
+  padding: 0 0 0 1rem;
+  border-left: 3px solid var(--wood);
+}
+
+.testimonial blockquote p {
+  margin: 0;
+}
+
+.testimonial figcaption {
+  margin: 0.7rem 0 0;
+  font-family: var(--sans);
+  font-size: 0.95rem;
+}
+
 .compare {
   margin: 0;
 }
@@ -732,6 +753,20 @@ button[type="submit"]:disabled {
 .foot p {
   margin: 0.3rem 0;
   max-width: 40rem;
+}
+
+.foot__services {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem 1.25rem;
+  margin: 0.85rem 0;
+  padding: 0;
+  list-style: none;
+  max-width: 46rem;
+}
+
+.foot__services a {
+  color: inherit;
 }
 
 .foot a {

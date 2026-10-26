@@ -1,4 +1,4 @@
-export const JOB_TYPES = ["renovation", "carpentry", "antique-restoration", "other"];
+export const JOB_TYPES = ["antique-restoration", "carpentry", "renovation", "other"];
 
 export const SIZES = [
   "whole",

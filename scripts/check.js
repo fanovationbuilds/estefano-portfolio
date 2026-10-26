@@ -129,6 +129,11 @@ else {
   }
   const services = data.hasOfferCatalog?.itemListElement || [];
   if (services.length !== 3) fail("JSON-LD should list three services");
+  const serviceNames = services.map((item) => item.itemOffered?.name);
+  if (serviceNames.join(" | ") !== "Antique repair and wood restoration | Custom carpentry | Full renovations") {
+    fail(`JSON-LD service order is ${serviceNames.join(" | ")}`);
+  }
+  if ("review" in data || "aggregateRating" in data) fail("JSON-LD includes a review rating");
   const restoration = JSON.stringify(services);
   if (!/apprentice/i.test(restoration) || !/Vollana/.test(restoration)) {
     fail("JSON-LD restoration service does not credit Vollana");
@@ -181,19 +186,57 @@ for (const file of walk(path.join(root, "src")).concat(walk(path.join(root, "scr
   if (assignment.test(source)) fail(`QUOTE_ENDPOINT is assigned outside config.js in ${file}`);
 }
 
+const optionOrder = [...quote.matchAll(/<option value="(antique-restoration|carpentry|renovation|other)">/g)].map((match) => match[1]);
+if (optionOrder.join(",") !== "antique-restoration,carpentry,renovation,other") {
+  fail(`Quote job types are out of order: ${optionOrder.join(",")}`);
+}
+
+const testimonial = "It is so hard to find people that do wood restoration, thank you so much for your amazing craft and expertise. You made this whole process a great experience.";
+for (const rel of ["index.html", "restoration/index.html"]) {
+  const page = htmlByRel.get(rel);
+  if (!page.includes(testimonial)) fail(`${rel} is missing the client testimonial`);
+  if (!page.includes("<figcaption>Wood restoration client</figcaption>")) fail(`${rel} testimonial attribution is wrong`);
+}
+for (const rel of ["carpentry/index.html", "renovations/index.html", "quote/index.html"]) {
+  if (htmlByRel.get(rel).includes(testimonial)) fail(`${rel} should not repeat the testimonial`);
+}
+
+function comesBefore(html, earlier, later) {
+  const a = html.indexOf(earlier);
+  const b = html.indexOf(later);
+  return a !== -1 && b !== -1 && a < b;
+}
+const navHtml = home.slice(home.indexOf('<nav class="nav"'), home.indexOf("</nav>"));
+if (!comesBefore(navHtml, "/restoration/", "/carpentry/") || !comesBefore(navHtml, "/carpentry/", "/renovations/")) {
+  fail("Primary nav service order is wrong");
+}
+const footer = home.slice(home.indexOf("<footer"));
+if (!comesBefore(footer, "Antique repair and wood restoration", "Custom carpentry") || !comesBefore(footer, "Custom carpentry", "Full renovations")) {
+  fail("Footer service order is wrong");
+}
+const cards = home.slice(home.indexOf('id="services-heading"'), home.indexOf('id="selected-heading"'));
+if (!comesBefore(cards, "Antique repair and wood restoration", "Custom carpentry") || !comesBefore(cards, "Custom carpentry", "Full renovations")) {
+  fail("Home service card order is wrong");
+}
+
 const robots = read("robots.txt");
 if (!robots.includes(`Sitemap: ${origin}/sitemap.xml`)) fail("robots.txt sitemap URL is wrong");
 const sitemap = read("sitemap.xml");
-for (const loc of [
+const sitemapOrder = [
   `${origin}/`,
   `${origin}/work/`,
-  `${origin}/renovations/`,
-  `${origin}/carpentry/`,
   `${origin}/restoration/`,
+  `${origin}/carpentry/`,
+  `${origin}/renovations/`,
   `${origin}/about/`,
   `${origin}/quote/`,
-]) {
-  if (!sitemap.includes(`<loc>${loc}</loc>`)) fail(`sitemap missing ${loc}`);
+];
+let lastSitemapIndex = -1;
+for (const loc of sitemapOrder) {
+  const at = sitemap.indexOf(`<loc>${loc}</loc>`);
+  if (at === -1) fail(`sitemap missing ${loc}`);
+  if (at < lastSitemapIndex) fail(`sitemap out of order at ${loc}`);
+  lastSitemapIndex = at;
 }
 if (sitemap.includes("404")) fail("sitemap should not list the 404 page");
 

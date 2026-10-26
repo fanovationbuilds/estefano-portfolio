@@ -19,9 +19,9 @@ Open the URL the preview script prints. It serves the site at the GitHub Pages p
 
 - Home
 - Work (before-and-after sliders)
-- Full renovations
-- Custom carpentry
 - Antique repair and wood restoration
+- Custom carpentry
+- Full renovations
 - About
 - Request a quote
 
