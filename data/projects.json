@@ -5,17 +5,17 @@
       "title": "Antique table",
       "service": "restoration",
       "featured": true,
-      "summary": "Placeholder for a table: joints, missing wood, and the finish. Replace this text with the real piece from the work with Vollana Antiques.",
-      "beforeAlt": "Placeholder graphic labeled Before for an antique table restored together with Vollana Antiques. It is not a photograph.",
-      "afterAlt": "Placeholder graphic labeled After for an antique table restored together with Vollana Antiques. It is not a photograph."
+      "summary": "Placeholder for a table: joints, missing wood, and the finish. Replace this text with the real piece.",
+      "beforeAlt": "Placeholder graphic labeled Before for an antique table. It is not a photograph.",
+      "afterAlt": "Placeholder graphic labeled After for an antique table. It is not a photograph."
     },
     {
       "id": "antique-case",
       "title": "Antique case piece",
       "service": "restoration",
-      "summary": "Placeholder for a case piece: structure and finish. Replace this text with the real piece from the work with Vollana Antiques.",
-      "beforeAlt": "Placeholder graphic labeled Before for an antique case piece restored together with Vollana Antiques. It is not a photograph.",
-      "afterAlt": "Placeholder graphic labeled After for an antique case piece restored together with Vollana Antiques. It is not a photograph."
+      "summary": "Placeholder for a case piece: structure and finish. Replace this text with the real piece.",
+      "beforeAlt": "Placeholder graphic labeled Before for an antique case piece. It is not a photograph.",
+      "afterAlt": "Placeholder graphic labeled After for an antique case piece. It is not a photograph."
     },
     {
       "id": "kitchen-cabinets",

@@ -2,7 +2,7 @@
 
 Portfolio site for hiring Estefano at Fanovation Builds: renovation, custom carpentry, and antique wood restoration in New York City. Static HTML, CSS, and a little JavaScript. Hosted on GitHub Pages. No paid services and no trackers.
 
-The tagline is "Real renovations. Real results." The site is for hiring him. It does not repeat the YouTube channel's DIY or tutorial language. Job videos are linked from the footer and the about page: [youtube.com/@FanovationBuilds](https://www.youtube.com/@FanovationBuilds).
+The tagline is "Real renovations. Real results." The site is for hiring the shop. It does not repeat the YouTube channel's DIY or tutorial language. Job videos are linked from the footer and the about page: [youtube.com/@FanovationBuilds](https://www.youtube.com/@FanovationBuilds).
 
 ## Address
 
@@ -21,7 +21,7 @@ node scripts/preview.js
 
 Open the URL the preview script prints. It serves the site at the path in `url`, which is `/` for `fanovationbuilds.com`.
 
-`node scripts/check.js` checks links, the quote form, local SEO tags, the Fanovation Builds name, and the Vollana credit. `node --test scripts/validate-quote.test.js scripts/site-url.test.js` checks form validation and the Pages path versus the domain root.
+`node scripts/check.js` checks links, the quote form, local SEO tags, the Fanovation Builds name, and the single Vollana mention. `node --test scripts/validate-quote.test.js scripts/site-url.test.js` checks form validation and the Pages path versus the domain root.
 
 ## Pages
 
@@ -55,7 +55,7 @@ Edit `data/projects.json`. One object per job:
 
 Leave `before` and `after` out to get a labeled placeholder drawing. Placeholder alt text has to say it is a placeholder and not a photograph.
 
-Every restoration project is credited to Vollana Antiques on the project, the restoration page, and the footer. The pieces are the shop's, shown with permission, not Estefano's alone. The shop's 40 years of experience is theirs. Do not add a restoration project that was not done with them unless you also change that credit in `scripts/build.js`. Do not add real client photos until there are real job photos to process.
+The site speaks as one team. Fanovation Builds and Vollana Antiques work out of the same shop. The home page has the one mention, with the link to [vollana-antiques.com](https://vollana-antiques.com/). Forty years in antiques, restoration, and woodwork is a team strength. Do not add lines about whose pieces are whose. Do not add real client photos until there are real job photos to process.
 
 ## Add a real photo
 

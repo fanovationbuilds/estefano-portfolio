@@ -9,7 +9,6 @@ const site = JSON.parse(fs.readFileSync(path.join(root, "data/site.json"), "utf8
 const { projects } = JSON.parse(fs.readFileSync(path.join(root, "data/projects.json"), "utf8"));
 const { origin, href, canonical } = resolveSite(site);
 
-const VOLLANA = "https://vollana-antiques.com/";
 const YOUTUBE = "https://www.youtube.com/@FanovationBuilds";
 const TAGLINE = "Real renovations. Real results.";
 const EMAIL_LINK =
@@ -29,7 +28,7 @@ const pages = [
     path: "/",
     title: "Fanovation Builds | Real renovations. Real results.",
     description:
-      "Fanovation Builds does antique wood restoration, custom carpentry, and full renovations in New York City.",
+      "Antique repair and wood restoration is how we come in. Cabinetry, woodwork, and renovations in New York City.",
     template: "home.html",
     jsonld: true,
   },
@@ -39,7 +38,7 @@ const pages = [
     path: "/work/",
     title: "Before and after | Fanovation Builds",
     description:
-      "Before-and-after projects from Fanovation Builds: wood restoration done together with Vollana Antiques, custom carpentry, and renovations.",
+      "Before-and-after projects from Fanovation Builds: antique repair, custom woodwork, and renovations in New York City.",
     template: "work.html",
   },
   {
@@ -48,7 +47,7 @@ const pages = [
     path: "/restoration/",
     title: "Antique repair and wood restoration | Fanovation Builds",
     description:
-      "Antique repair and wood restoration Estefano does together with Vollana Antiques, shown with the shop's permission.",
+      "We repair antiques and restore wood finishes in New York City. One piece is a real job, and it is how we come into a home.",
     template: "restoration.html",
   },
   {
@@ -57,7 +56,7 @@ const pages = [
     path: "/carpentry/",
     title: "Custom carpentry in New York City | Fanovation Builds",
     description:
-      "Kitchen cabinets, doors, closets, and built-ins, made for the room. Custom carpentry in New York City by Fanovation Builds.",
+      "Custom doors, closets, kitchen cabinets, islands, and built-ins in New York City. Fanovation Builds.",
     template: "carpentry.html",
   },
   {
@@ -66,7 +65,7 @@ const pages = [
     path: "/renovations/",
     title: "Full renovations in New York City | Fanovation Builds",
     description:
-      "Plumbing, electrical, kitchens, bathrooms, framing, and flooring. Renovation work in New York City by Fanovation Builds.",
+      "While we are already in your home, we can also do floors, the shower, and the bathroom. Fanovation Builds, New York City.",
     template: "renovations.html",
   },
   {
@@ -75,7 +74,7 @@ const pages = [
     path: "/about/",
     title: "Estefano at Fanovation Builds | New York City",
     description:
-      "Estefano at Fanovation Builds takes restoration, carpentry, and renovation jobs across New York City.",
+      "We restore wood, build cabinetry, and renovate across New York City. Estefano at Fanovation Builds.",
     template: "about.html",
   },
   {
@@ -256,10 +255,6 @@ function materializeImages() {
 function figure(project) {
   const labelId = `label-${project.id}`;
   const hintId = `hint-${project.id}`;
-  const credit =
-    project.service === "restoration"
-      ? `<p class="credit">Work done together with <a href="${VOLLANA}">Vollana Antiques</a>. The piece is the shop's, shown with their permission, not as Estefano's alone.</p>`
-      : "";
   return `<figure class="project" id="${escapeHtml(project.id)}">
       <div class="compare" data-compare style="--pos: 50">
         <div class="compare__stage">
@@ -281,7 +276,6 @@ function figure(project) {
         <p class="project__meta">${escapeHtml(SERVICE_LABEL[project.service])} · New York City</p>
         <p class="project__title">${escapeHtml(project.title)}</p>
         <p>${escapeHtml(project.summary)}</p>
-        ${credit}
       </figcaption>
     </figure>`;
 }
@@ -303,7 +297,7 @@ function jsonLd() {
     "@type": "LocalBusiness",
     name: site.name,
     description:
-      "Antique wood restoration, custom carpentry, and full renovations in New York City.",
+      "Fanovation Builds with Vollana Antiques. One shop and one team for antique repair, cabinetry, woodwork, and renovations in New York City.",
     url: `${origin}/`,
     image: `${origin}/images/logo.webp`,
     sameAs: [YOUTUBE],
@@ -328,7 +322,7 @@ function jsonLd() {
             "@type": "Service",
             name: "Antique repair and wood restoration",
             description:
-              "Restoration work done together with Vollana Antiques, drawing on their 40 years of experience with antiques, restoration, and woodwork. Shown with the shop's permission.",
+              "Antique repair and wood restoration is how we come into a home. One team, with 40 years of experience in antiques, restoration, and woodwork.",
             url: `${origin}/restoration/`,
           },
         },
@@ -337,7 +331,8 @@ function jsonLd() {
           itemOffered: {
             "@type": "Service",
             name: "Custom carpentry",
-            description: "Kitchen cabinets, doors, closets, and built-ins.",
+            description:
+              "Custom doors, custom closets, kitchen cabinets, islands, and built-ins, including a living-room bookshelf with a hidden door.",
             url: `${origin}/carpentry/`,
           },
         },
@@ -346,7 +341,8 @@ function jsonLd() {
           itemOffered: {
             "@type": "Service",
             name: "Full renovations",
-            description: "Plumbing, electrical, kitchens, bathrooms, framing, and flooring.",
+            description:
+              "While we are already in the home, we can also do the floors, the shower, and the bathroom.",
             url: `${origin}/renovations/`,
           },
         },
@@ -433,7 +429,6 @@ function layout(page, body) {
         <div><dt>Email</dt><dd>${EMAIL_LINK}</dd></div>
         <div><dt>YouTube</dt><dd><a href="${YOUTUBE}">Fanovation Builds</a></dd></div>
       </dl>
-      <p class="foot__credit">Antique repair and wood restoration on this site is work Estefano does together with <a href="${VOLLANA}">Vollana Antiques</a>. Those pieces are the shop's, shown with permission.</p>
     </div>
   </footer>
   <script type="module" src="${href("/js/compare.js")}"></script>
@@ -509,11 +504,7 @@ function build() {
       .map((project) => figure(project))
       .join("\n"),
     "{{projects-all}}": [
-      projectGroup(
-        "restoration",
-        "Antique repair and wood restoration",
-        `<p class="credit">These pieces are work Estefano does together with <a href="${VOLLANA}">Vollana Antiques</a>. They are the shop's, shown with permission, not his alone.</p>`,
-      ),
+      projectGroup("restoration", "Antique repair and wood restoration"),
       projectGroup("carpentry", "Custom carpentry"),
       projectGroup("renovation", "Full renovations"),
     ].join("\n"),

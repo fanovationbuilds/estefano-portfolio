@@ -85,7 +85,6 @@ for (const [rel, html] of htmlByRel) {
   if (html.replace(/href="[^"]*"/g, "").includes("queborealestate@gmail.com")) {
     fail(`${rel} shows the email address`);
   }
-  if (!html.includes("https://vollana-antiques.com/")) fail(`${rel} missing Vollana link`);
   if (!html.includes("Fanovation Builds")) fail(`${rel} missing the Fanovation Builds name`);
   if (!html.includes(TAGLINE)) fail(`${rel} missing the tagline`);
   const youtube = `href="${YOUTUBE}"`;
@@ -96,9 +95,19 @@ for (const [rel, html] of htmlByRel) {
     if (html.includes(banned)) fail(`${rel} uses channel tutorial language: ${banned}`);
   }
   if (shopRolePattern.test(html)) fail(`${rel} still uses the banned shop-role word`);
-  if (!html.includes("together with")) fail(`${rel} missing the Vollana partnership line`);
-  if ((rel === "index.html" || rel === "restoration/index.html") && !html.includes("their 40 years of experience")) {
-    fail(`${rel} should credit Vollana's 40 years`);
+  for (const phrase of [
+    "together with",
+    "their 40 years",
+    "not his alone",
+    "not presented as his",
+    "not as Estefano",
+    "credited to",
+    "the shop's",
+    "shown with",
+  ]) {
+    if (html.toLowerCase().includes(phrase.toLowerCase())) {
+      fail(`${rel} still splits the work between people: ${phrase}`);
+    }
   }
   if (/\$\s?\d/.test(html)) fail(`${rel} appears to list a price`);
   const otherNumbers = html
@@ -187,10 +196,25 @@ else {
     fail(`JSON-LD service order is ${serviceNames.join(" | ")}`);
   }
   if ("review" in data || "aggregateRating" in data) fail("JSON-LD includes a review rating");
-  const restoration = JSON.stringify(services);
-  if (shopRolePattern.test(restoration)) fail("JSON-LD still uses the banned shop-role word");
-  if (!/together with Vollana/i.test(restoration) || !/their 40 years/.test(restoration)) {
-    fail("JSON-LD restoration service does not credit Vollana");
+  const restorationOffer = JSON.stringify(services);
+  if (shopRolePattern.test(restorationOffer)) fail("JSON-LD still uses the banned shop-role word");
+  if (/together with|their 40 years|permission|the shop's/i.test(restorationOffer)) {
+    fail("JSON-LD still splits the work between people");
+  }
+  if (!String(data.description).includes("Vollana Antiques") || !/one team/i.test(String(data.description))) {
+    fail("JSON-LD should describe Fanovation Builds and Vollana as one team");
+  }
+  const restorationService = services.find((item) => item.itemOffered?.name === "Antique repair and wood restoration");
+  const carpentryService = services.find((item) => item.itemOffered?.name === "Custom carpentry");
+  const renovationService = services.find((item) => item.itemOffered?.name === "Full renovations");
+  if (!/40 years of experience in antiques, restoration, and woodwork/.test(restorationService?.itemOffered?.description || "")) {
+    fail("JSON-LD restoration description should name the team's 40 years");
+  }
+  if (!/hidden door/.test(carpentryService?.itemOffered?.description || "")) {
+    fail("JSON-LD carpentry description should name the woodwork");
+  }
+  if (!/floors/.test(renovationService?.itemOffered?.description || "") || !/bathroom/.test(renovationService?.itemOffered?.description || "")) {
+    fail("JSON-LD renovation description should stay the smaller in-home work");
   }
 }
 
@@ -200,12 +224,36 @@ if (about && !about.includes("Estefano at Fanovation Builds")) {
 }
 
 const restoration = htmlByRel.get("restoration/index.html");
-if (restoration && !restoration.includes("not presented as his alone")) {
-  fail("Restoration page does not say the pieces are not his alone");
-}
 for (const project of projects.filter((item) => item.service === "restoration")) {
   if (!restoration.includes(`id="${project.id}"`)) fail(`Restoration page missing ${project.id}`);
-  if (!restoration.includes("not as Estefano's alone")) fail("Restoration project caption missing the Vollana credit");
+}
+const vollanaUrl = "https://vollana-antiques.com/";
+let vollanaLinks = 0;
+for (const [rel, html] of htmlByRel) {
+  const count = html.split(vollanaUrl).length - 1;
+  vollanaLinks += count;
+  if (rel !== "index.html" && count !== 0) fail(`${rel} repeats the Vollana link`);
+}
+if (vollanaLinks !== 1) fail(`Expected one Vollana link, found ${vollanaLinks}`);
+if (!home.includes("Fanovation Builds with")) fail("Home is missing the Vollana team line");
+if (!home.includes(">Vollana Antiques</a>")) fail("Home Vollana mention should be the linked shop name");
+if (!home.includes("same shop") || !home.includes("one team") || !home.includes("one-stop shop")) {
+  fail("Home should describe one shop and one team");
+}
+if (!home.includes("40 years of experience in antiques, restoration, and woodwork")) {
+  fail("Home should mention 40 years as a team strength");
+}
+for (const example of ["custom doors", "custom closets", "kitchen cabinets", "islands", "bookshelf", "hidden door"]) {
+  if (!home.toLowerCase().includes(example)) fail(`Home is missing woodwork example: ${example}`);
+}
+const renovationsSlice = home.slice(home.indexOf('id="renovations-lead"'), home.indexOf('id="selected-heading"'));
+if (!/floors/.test(renovationsSlice) || !/shower/.test(renovationsSlice) || !/bathroom/.test(renovationsSlice)) {
+  fail("Home renovations section should mention floors, the shower, and the bathroom");
+}
+for (const rel of ["index.html", "restoration/index.html", "carpentry/index.html", "renovations/index.html", "about/index.html", "quote/index.html"]) {
+  const page = htmlByRel.get(rel) || "";
+  if (!/\bwe\b/i.test(page)) fail(`${rel} should speak as we`);
+  if (/\bhe\b/i.test(page)) fail(`${rel} still speaks as he`);
 }
 
 const work = htmlByRel.get("work/index.html");
