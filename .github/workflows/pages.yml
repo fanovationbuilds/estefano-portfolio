@@ -1,0 +1,66 @@
+name: Publish to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7.0.1
+
+      - name: Set up Node
+        uses: actions/setup-node@v7.1.0
+        with:
+          node-version: 22
+
+      - name: Build
+        run: node scripts/build.js
+
+      - name: Check pages
+        run: node scripts/check.js
+
+      - name: Test quote validation
+        run: node --test scripts/validate-quote.test.js
+
+      - name: Upload Pages artifact
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v5.0.0
+        with:
+          path: dist
+
+  deploy:
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      # Creating the Pages site is a repository-administration call.
+      # The default GITHUB_TOKEN cannot do it. This step succeeds once
+      # Settings → Pages → Source is GitHub Actions. Until then it fails
+      # with "Resource not accessible by integration" or "Not Found".
+      - name: Try to enable GitHub Pages
+        uses: actions/configure-pages@v6.0.0
+        with:
+          enablement: true
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v5.0.1

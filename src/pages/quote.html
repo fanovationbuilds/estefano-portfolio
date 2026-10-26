@@ -1,0 +1,90 @@
+<p class="kicker">Quote</p>
+<h1>Request a quote</h1>
+<p class="lede">Big jobs and small ones. Say what you need done, where it is, and when you hope to start. He replies to the phone or email you leave here.</p>
+<p>There is no price list on this site. A quote comes after the job is clear.</p>
+
+<form id="quote-form" class="ticket" novalidate>
+  <div id="form-errors" class="form-errors" role="alert" tabindex="-1" hidden></div>
+  <div id="form-status" class="form-status" role="status" tabindex="-1"></div>
+
+  <div class="field">
+    <label for="name">Name (required)</label>
+    <input id="name" name="name" type="text" autocomplete="name" required maxlength="120" aria-describedby="name-error">
+    <p class="error" id="name-error" hidden></p>
+  </div>
+
+  <fieldset aria-describedby="contact-error">
+    <legend>Phone or email (at least one is required)</legend>
+    <div class="field">
+      <label for="phone">Phone</label>
+      <input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" maxlength="40" aria-describedby="phone-error contact-error">
+      <p class="error" id="phone-error" hidden></p>
+    </div>
+    <div class="field">
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" autocomplete="email" inputmode="email" maxlength="120" aria-describedby="email-error contact-error">
+      <p class="error" id="email-error" hidden></p>
+    </div>
+    <p class="error" id="contact-error" hidden></p>
+  </fieldset>
+
+  <div class="field">
+    <label for="jobType">Job type (required)</label>
+    <select id="jobType" name="jobType" required aria-describedby="jobType-error">
+      <option value="">Select one</option>
+      <option value="antique-restoration">Antique repair and wood restoration</option>
+      <option value="carpentry">Custom carpentry</option>
+      <option value="renovation">Full renovations</option>
+      <option value="other">Other</option>
+    </select>
+    <p class="error" id="jobType-error" hidden></p>
+  </div>
+
+  <div class="field">
+    <label for="size">Job size (required)</label>
+    <select id="size" name="size" required aria-describedby="size-error">
+      <option value="">Select one</option>
+      <option value="whole">Whole renovation (apartment or house)</option>
+      <option value="multi-room">More than one room</option>
+      <option value="one-room">One room</option>
+      <option value="several-pieces">Several cabinets, doors, or built-ins</option>
+      <option value="single-piece">A single cabinet, door, or furniture piece</option>
+      <option value="unsure">Not sure yet</option>
+    </select>
+    <p class="error" id="size-error" hidden></p>
+  </div>
+
+  <div class="field">
+    <label for="location">Location (required)</label>
+    <input id="location" name="location" type="text" required maxlength="200" aria-describedby="location-hint location-error">
+    <p class="hint" id="location-hint">Neighborhood and borough are enough. A street address is optional.</p>
+    <p class="error" id="location-error" hidden></p>
+  </div>
+
+  <div class="field">
+    <label for="timeline">Timeline (required)</label>
+    <input id="timeline" name="timeline" type="text" required maxlength="200" aria-describedby="timeline-hint timeline-error">
+    <p class="hint" id="timeline-hint">A month or a season is enough. For example: this spring, or as soon as you can start.</p>
+    <p class="error" id="timeline-error" hidden></p>
+  </div>
+
+  <div class="field">
+    <label for="photos">Photos <span class="optional">(optional)</span></label>
+    <input id="photos" name="photos" type="file" accept="image/jpeg,image/png,image/webp,image/gif" multiple aria-describedby="photos-hint photos-error">
+    <p class="hint" id="photos-hint">Up to 5. JPEG or PNG works best. Photos are resized in the browser before sending.</p>
+    <ul id="photo-names" class="photo-names"></ul>
+    <p class="error" id="photos-error" hidden></p>
+  </div>
+
+  <div class="field">
+    <label for="message">Message (required)</label>
+    <textarea id="message" name="message" required maxlength="5000" rows="6" aria-describedby="message-error"></textarea>
+    <p class="error" id="message-error" hidden></p>
+  </div>
+
+  <button type="submit">Send the request</button>
+</form>
+
+<noscript>
+  <p class="form-errors">JavaScript is off, so this form cannot check your answers or send them.</p>
+</noscript>
