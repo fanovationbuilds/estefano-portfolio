@@ -64,12 +64,12 @@ Point `before` or `after` in `data/projects.json` at `images/projects/kitchen-be
 The destination is one constant:
 
 ```js
-export const QUOTE_ENDPOINT = "";
+export const QUOTE_ENDPOINT = "https://script.google.com/macros/s/…/exec";
 ```
 
-in `src/js/config.js`. Leave it empty until the Google Apps Script web app exists. Submitting a valid form then shows a message on the page and does not pretend the request was sent.
+in `src/js/config.js`. The value is the deployed web app `/exec` URL, not `/dev`. The browser sends JSON as `text/plain` so the Apps Script request stays a simple POST. Fields: `name`, `phone`, `email`, `jobType`, `size`, `location`, `timeline`, `message`, `photos` (JPEG base64, already resized in the browser), `submittedAt`, `source`.
 
-When you have the URL, paste the `/exec` link (not `/dev`), rebuild, and deploy. The browser sends JSON as `text/plain` so the Apps Script request stays a simple POST. Fields: `name`, `phone`, `email`, `jobType`, `size`, `location`, `timeline`, `message`, `photos` (JPEG base64, already resized in the browser), `submittedAt`, `source`.
+If that constant is empty or still a placeholder, a valid submit stays on the page and says nothing was sent.
 
 A script that logs a row and saves photos to Drive:
 
