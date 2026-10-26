@@ -66,7 +66,18 @@ for (const [rel, html] of htmlByRel) {
     fail(`${rel} meta description is ${description[1].length} characters`);
   }
   if (!html.includes('rel="canonical"')) fail(`${rel} missing canonical`);
-  if ((html.match(/class="todo">TODO/g) || []).length < 2) fail(`${rel} contact TODOs missing`);
+  const phoneTodos = html.match(/<dt>Phone<\/dt>\s*<dd class="todo">TODO<\/dd>/g) || [];
+  const expectedPhones = rel === "about/index.html" ? 2 : 1;
+  if (phoneTodos.length !== expectedPhones) fail(`${rel} has ${phoneTodos.length} phone TODOs`);
+  if (/<dt>Email<\/dt>\s*<dd class="todo">/.test(html)) fail(`${rel} email is still a TODO`);
+  const mailto = 'href="mailto:queborealestate@gmail.com?subject=Quote%20request"';
+  const mailtoCount = html.split(mailto).length - 1;
+  const expectedMailtos = rel === "about/index.html" ? 2 : 1;
+  if (mailtoCount !== expectedMailtos) fail(`${rel} has ${mailtoCount} email links`);
+  if ((html.split(">Email me</a>").length - 1) !== expectedMailtos) fail(`${rel} email label is wrong`);
+  if (html.replace(/href="[^"]*"/g, "").includes("queborealestate@gmail.com")) {
+    fail(`${rel} shows the email address`);
+  }
   if (!html.includes("https://vollana-antiques.com/")) fail(`${rel} missing Vollana link`);
   if (!html.includes("apprentice")) fail(`${rel} missing apprenticeship credit`);
   if (/\$\s?\d/.test(html)) fail(`${rel} appears to list a price`);
@@ -84,6 +95,11 @@ for (const [rel, html] of htmlByRel) {
   for (const match of attrs) {
     let url = match[1];
     if (url.startsWith("https://vollana-antiques.com/")) continue;
+    if (url === "mailto:queborealestate@gmail.com?subject=Quote%20request") continue;
+    if (url.startsWith("mailto:")) {
+      fail(`${rel} has an unexpected mailto: ${url}`);
+      continue;
+    }
     if (url.startsWith(origin)) url = url.slice(origin.length) || "/";
     const hashIndex = url.indexOf("#");
     const hash = hashIndex >= 0 ? url.slice(hashIndex + 1) : "";
@@ -119,9 +135,10 @@ else {
     fail("JSON-LD address should be New York, NY, with no narrower place");
   }
   if ("postalCode" in address || "streetAddress" in address) fail("JSON-LD includes a street or postal code");
-  for (const key of ["telephone", "priceRange", "aggregateRating", "review"]) {
+  for (const key of ["telephone", "email", "priceRange", "aggregateRating", "review"]) {
     if (key in data) fail(`JSON-LD includes ${key}`);
   }
+  if (JSON.stringify(data).includes("queborealestate@gmail.com")) fail("JSON-LD includes the email address");
   if (data.areaServed?.name !== "New York City") fail("JSON-LD areaServed is not New York City");
   const packed = JSON.stringify(data);
   for (const banned of ["10032", "Washington Heights", "Upper Manhattan"]) {

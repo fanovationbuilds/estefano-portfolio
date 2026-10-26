@@ -13,6 +13,8 @@ const basePath = new URL(site.url).pathname.endsWith("/")
   : `${new URL(site.url).pathname}/`;
 
 const VOLLANA = "https://vollana-antiques.com/";
+const EMAIL_LINK =
+  '<a class="button" href="mailto:queborealestate@gmail.com?subject=Quote%20request">Email me</a>';
 const SERVICES = ["restoration", "carpentry", "renovation"];
 const SERVICE_LABEL = {
   renovation: "Full renovation",
@@ -432,7 +434,7 @@ function layout(page, body) {
       </ul>
       <dl class="contact">
         <div><dt>Phone</dt><dd class="todo">TODO</dd></div>
-        <div><dt>Email</dt><dd class="todo">TODO</dd></div>
+        <div><dt>Email</dt><dd>${EMAIL_LINK}</dd></div>
       </dl>
       <p class="foot__credit">Antique repair and wood restoration on this site is work Estefano did as an apprentice at <a href="${VOLLANA}">Vollana Antiques</a>. Those pieces are the shop's, shown with permission.</p>
     </div>
@@ -511,6 +513,7 @@ function build() {
       projectGroup("renovation", "Full renovations"),
     ].join("\n"),
     "{{testimonial}}": testimonialHtml,
+    "{{email-link}}": EMAIL_LINK,
   };
 
   for (const page of pages) {

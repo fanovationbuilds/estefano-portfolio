@@ -118,7 +118,7 @@ Deploy it as a web app, execute as yourself, access "Anyone". Put the `/exec` UR
 
 ## Contact details
 
-Phone and email are the visible text `TODO` in the footer and on the about page, from `scripts/build.js` and `src/pages/about.html`. Replace those when you have real ones. Do not invent a number, a license, a review, a price, or years of experience. `scripts/check.js` fails if a phone-number pattern shows up before you remove that guard.
+Email on the about page and in the footer is an **Email me** button. The address is only in that `mailto:` link (subject `Quote request`). It is not printed on the page and it is not in the JSON-LD. Phone is still the visible text `TODO` in `scripts/build.js` and `src/pages/about.html`. Do not invent a number, a license, a review, a price, or years of experience. `scripts/check.js` fails if a phone-number pattern shows up before you remove that guard.
 
 ## GitHub Pages
 
