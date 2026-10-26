@@ -1,18 +1,17 @@
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { resolveSite } from "./site-url.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dist = path.join(root, "dist");
 const site = JSON.parse(fs.readFileSync(path.join(root, "data/site.json"), "utf8"));
 const { projects } = JSON.parse(fs.readFileSync(path.join(root, "data/projects.json"), "utf8"));
-
-const origin = site.url.replace(/\/$/, "");
-const basePath = new URL(site.url).pathname.endsWith("/")
-  ? new URL(site.url).pathname
-  : `${new URL(site.url).pathname}/`;
+const { origin, href, canonical } = resolveSite(site);
 
 const VOLLANA = "https://vollana-antiques.com/";
+const YOUTUBE = "https://www.youtube.com/@FanovationBuilds";
+const TAGLINE = "Real renovations. Real results.";
 const EMAIL_LINK =
   '<a class="button" href="mailto:queborealestate@gmail.com?subject=Quote%20request">Email me</a>';
 const PHONE_LINK = '<a href="tel:+13477469070">(347) 746-9070</a>';
@@ -28,9 +27,9 @@ const pages = [
     id: "home",
     out: "index.html",
     path: "/",
-    title: "Estefano | Restoration, carpentry, and renovations in NYC",
+    title: "Fanovation Builds | Real renovations. Real results.",
     description:
-      "Estefano does antique wood restoration, custom carpentry, and full renovations in New York City.",
+      "Fanovation Builds does antique wood restoration, custom carpentry, and full renovations in New York City.",
     template: "home.html",
     jsonld: true,
   },
@@ -38,16 +37,16 @@ const pages = [
     id: "work",
     out: "work/index.html",
     path: "/work/",
-    title: "Before and after | Estefano",
+    title: "Before and after | Fanovation Builds",
     description:
-      "Before-and-after projects from Estefano: wood restoration done as an apprentice at Vollana Antiques, custom carpentry, and renovations.",
+      "Before-and-after projects from Fanovation Builds: wood restoration done as an apprentice at Vollana Antiques, custom carpentry, and renovations.",
     template: "work.html",
   },
   {
     id: "restoration",
     out: "restoration/index.html",
     path: "/restoration/",
-    title: "Antique repair and wood restoration | Estefano",
+    title: "Antique repair and wood restoration | Fanovation Builds",
     description:
       "Antique repair and wood restoration Estefano did as an apprentice at Vollana Antiques, shown with the shop's permission.",
     template: "restoration.html",
@@ -56,44 +55,44 @@ const pages = [
     id: "carpentry",
     out: "carpentry/index.html",
     path: "/carpentry/",
-    title: "Custom carpentry in New York City | Estefano",
+    title: "Custom carpentry in New York City | Fanovation Builds",
     description:
-      "Kitchen cabinets, doors, closets, and built-ins, made for the room. Custom carpentry in New York City by Estefano.",
+      "Kitchen cabinets, doors, closets, and built-ins, made for the room. Custom carpentry in New York City by Fanovation Builds.",
     template: "carpentry.html",
   },
   {
     id: "renovations",
     out: "renovations/index.html",
     path: "/renovations/",
-    title: "Full renovations in New York City | Estefano",
+    title: "Full renovations in New York City | Fanovation Builds",
     description:
-      "Plumbing, electrical, kitchens, bathrooms, framing, and flooring. Renovation work in New York City by Estefano.",
+      "Plumbing, electrical, kitchens, bathrooms, framing, and flooring. Renovation work in New York City by Fanovation Builds.",
     template: "renovations.html",
   },
   {
     id: "about",
     out: "about/index.html",
     path: "/about/",
-    title: "About Estefano | New York City",
+    title: "Estefano at Fanovation Builds | New York City",
     description:
-      "Estefano takes restoration, carpentry, and renovation jobs across New York City.",
+      "Estefano at Fanovation Builds takes restoration, carpentry, and renovation jobs across New York City.",
     template: "about.html",
   },
   {
     id: "quote",
     out: "quote/index.html",
     path: "/quote/",
-    title: "Request a quote | Estefano",
+    title: "Request a quote | Fanovation Builds",
     description:
-      "Ask Estefano for a quote on antique restoration, carpentry, or a renovation in New York City. Big jobs and small ones.",
+      "Ask Fanovation Builds for a quote on antique restoration, carpentry, or a renovation in New York City. Big jobs and small ones.",
     template: "quote.html",
   },
   {
     id: "404",
     out: "404.html",
     path: "/404.html",
-    title: "Page not found | Estefano",
-    description: "That page is not on Estefano's site. The work, services, and quote form are linked from here.",
+    title: "Page not found | Fanovation Builds",
+    description: "That page is not on the Fanovation Builds site. The work, services, and quote form are linked from here.",
     template: "404.html",
     robots: "noindex",
     sitemap: false,
@@ -127,17 +126,6 @@ function escapeHtml(value) {
     .replaceAll(">", "&gt;")
     .replaceAll('"', "&quot;")
     .replaceAll("'", "&#39;");
-}
-
-function href(pathname) {
-  const base = basePath.endsWith("/") ? basePath.slice(0, -1) : basePath;
-  if (pathname === "/") return base === "" ? "/" : `${base}/`;
-  return `${base}${pathname}`;
-}
-
-function canonical(pathname) {
-  if (pathname === "/") return `${origin}/`;
-  return `${origin}${pathname}`;
 }
 
 function assertProjects(list) {
@@ -197,9 +185,9 @@ function assertProjects(list) {
 
 function placeholderSvg(project, side) {
   const before = side === "before";
-  const bg = before ? "#efe6d6" : "#5c3b2a";
-  const fg = before ? "#241c16" : "#f6f0e6";
-  const line = before ? "#8d7b68" : "#e4c7a8";
+  const bg = before ? "#321C09" : "#171009";
+  const fg = before ? "#BBA279" : "#D1A149";
+  const line = before ? "#D1A149" : "#BBA279";
   const layouts = {
     renovation: [
       [80, 140, 460, 280],
@@ -242,10 +230,10 @@ function placeholderSvg(project, side) {
   <rect x="24" y="24" width="1152" height="752" fill="none" stroke="${fg}" stroke-width="3"/>
   ${shapes}
   <rect x="48" y="560" width="1104" height="190" fill="${bg}"/>
-  <text x="72" y="630" fill="${fg}" font-family="Georgia, serif" font-size="26" letter-spacing="5">PLACEHOLDER</text>
-  <text x="72" y="700" fill="${fg}" font-family="Georgia, serif" font-size="64">${word}</text>
-  <text x="72" y="742" fill="${fg}" font-family="Georgia, serif" font-size="28">${escapeHtml(project.title)}</text>
-  <text x="1128" y="742" fill="${fg}" text-anchor="end" font-family="Georgia, serif" font-size="22">Not a photograph</text>
+  <text x="72" y="630" fill="${fg}" font-family="Arial, sans-serif" font-size="26" letter-spacing="5">PLACEHOLDER</text>
+  <text x="72" y="700" fill="${fg}" font-family="Arial, sans-serif" font-size="64">${word}</text>
+  <text x="72" y="742" fill="${fg}" font-family="Arial, sans-serif" font-size="28">${escapeHtml(project.title)}</text>
+  <text x="1128" y="742" fill="${fg}" text-anchor="end" font-family="Arial, sans-serif" font-size="22">Not a photograph</text>
 </svg>
 `;
 }
@@ -319,7 +307,8 @@ function jsonLd() {
     description:
       "Antique wood restoration, custom carpentry, and full renovations in New York City.",
     url: `${origin}/`,
-    image: `${origin}/favicon.svg`,
+    image: `${origin}/images/logo.webp`,
+    sameAs: [YOUTUBE],
     telephone: "+1-347-746-9070",
     address: {
       "@type": "PostalAddress",
@@ -399,8 +388,11 @@ function layout(page, body) {
   <meta property="og:description" content="${escapeHtml(page.description)}">
   <meta property="og:type" content="website">
   <meta property="og:url" content="${canonical(page.path)}">
-  <meta name="theme-color" content="#f4efe6">
-  <link rel="icon" href="${href("/favicon.svg")}" type="image/svg+xml">
+  <meta name="theme-color" content="#171009">
+  <meta property="og:image" content="${origin}/images/logo.webp">
+  <link rel="icon" href="${href("/favicon-32.png")}" type="image/png" sizes="32x32">
+  <link rel="icon" href="${href("/favicon-192.png")}" type="image/png" sizes="192x192">
+  <link rel="apple-touch-icon" href="${href("/apple-touch-icon.png")}">
   <link rel="stylesheet" href="${href("/css/site.css")}">
   ${structured}
 </head>
@@ -409,7 +401,10 @@ function layout(page, body) {
   <header class="mast">
     <div class="wrap mast__inner">
       <div class="brand">
-        <a class="wordmark" href="${href("/")}">Estefano</a>
+        <a class="wordmark" href="${href("/")}" aria-label="${escapeHtml(site.name)}">
+          <img class="wordmark__mark" src="${href("/images/logo.webp")}" alt="" width="64" height="64">
+          <span class="wordmark__name">${escapeHtml(site.name).replace(" ", "<br>")}</span>
+        </a>
         <p class="brand__place">New York City</p>
       </div>
       <nav class="nav" aria-label="Primary">
@@ -424,7 +419,8 @@ function layout(page, body) {
   </main>
   <footer class="foot">
     <div class="wrap">
-      <p class="foot__name">Estefano</p>
+      <p class="foot__name">${escapeHtml(site.name)}</p>
+      <p class="foot__tagline">${TAGLINE}</p>
       <p>Service area: NYC.</p>
       <ul class="foot__services">
         ${serviceOrder
@@ -437,6 +433,7 @@ function layout(page, body) {
       <dl class="contact">
         <div><dt>Phone</dt><dd>${PHONE_LINK}</dd></div>
         <div><dt>Email</dt><dd>${EMAIL_LINK}</dd></div>
+        <div><dt>YouTube</dt><dd><a href="${YOUTUBE}">Fanovation Builds</a></dd></div>
       </dl>
       <p class="foot__credit">Antique repair and wood restoration on this site is work Estefano did as an apprentice at <a href="${VOLLANA}">Vollana Antiques</a>. Those pieces are the shop's, shown with permission.</p>
     </div>
@@ -485,7 +482,9 @@ function build() {
   copyDir(path.join(root, "src/js"), path.join(dist, "js"));
   copyDir(path.join(root, "src/fonts"), path.join(dist, "fonts"));
   copyDir(path.join(root, "src/images"), path.join(dist, "images"));
-  fs.copyFileSync(path.join(root, "src/favicon.svg"), path.join(dist, "favicon.svg"));
+  for (const icon of ["favicon-32.png", "favicon-192.png", "apple-touch-icon.png"]) {
+    fs.copyFileSync(path.join(root, "src", icon), path.join(dist, icon));
+  }
   materializeImages();
   fs.writeFileSync(path.join(dist, ".nojekyll"), "");
 

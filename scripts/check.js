@@ -2,13 +2,15 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { JOB_TYPES, SIZES } from "../src/js/validate-quote.js";
+import { resolveSite } from "./site-url.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dist = path.join(root, "dist");
 const site = JSON.parse(fs.readFileSync(path.join(root, "data/site.json"), "utf8"));
 const { projects } = JSON.parse(fs.readFileSync(path.join(root, "data/projects.json"), "utf8"));
-const origin = site.url.replace(/\/$/, "");
-const basePath = new URL(site.url).pathname.replace(/\/$/, "");
+const { origin, basePath } = resolveSite(site);
+const YOUTUBE = "https://www.youtube.com/@FanovationBuilds";
+const TAGLINE = "Real renovations. Real results.";
 const failures = [];
 
 function fail(message) {
@@ -60,6 +62,7 @@ for (const [rel, html] of htmlByRel) {
   const title = html.match(/<title>([^<]*)<\/title>/);
   if (!title) fail(`${rel} missing title`);
   else if (title[1].length > 70) fail(`${rel} title is ${title[1].length} characters`);
+  else if (!title[1].includes("Fanovation Builds")) fail(`${rel} title is not Fanovation Builds`);
   const description = html.match(/<meta name="description" content="([^"]*)">/);
   if (!description) fail(`${rel} missing meta description`);
   else if (description[1].length < 50 || description[1].length > 170) {
@@ -81,6 +84,15 @@ for (const [rel, html] of htmlByRel) {
     fail(`${rel} shows the email address`);
   }
   if (!html.includes("https://vollana-antiques.com/")) fail(`${rel} missing Vollana link`);
+  if (!html.includes("Fanovation Builds")) fail(`${rel} missing the Fanovation Builds name`);
+  if (!html.includes(TAGLINE)) fail(`${rel} missing the tagline`);
+  const youtube = `href="${YOUTUBE}"`;
+  const youtubeCount = html.split(youtube).length - 1;
+  const expectedYoutube = rel === "about/index.html" ? 2 : 1;
+  if (youtubeCount !== expectedYoutube) fail(`${rel} has ${youtubeCount} YouTube links`);
+  for (const banned of ["DIY", "diy", "tutorial", "step-by-step"]) {
+    if (html.includes(banned)) fail(`${rel} uses channel tutorial language: ${banned}`);
+  }
   if (!html.includes("apprentice")) fail(`${rel} missing apprenticeship credit`);
   if (/\$\s?\d/.test(html)) fail(`${rel} appears to list a price`);
   const otherNumbers = html
@@ -101,6 +113,7 @@ for (const [rel, html] of htmlByRel) {
   for (const match of attrs) {
     let url = match[1];
     if (url.startsWith("https://vollana-antiques.com/")) continue;
+    if (url === YOUTUBE) continue;
     if (url === "mailto:queborealestate@gmail.com?subject=Quote%20request") continue;
     if (url === "tel:+13477469070") continue;
     if (url.startsWith("tel:")) {
@@ -141,6 +154,11 @@ if (!ldMatch) fail("Home page missing JSON-LD");
 else {
   const data = JSON.parse(ldMatch[1]);
   if (data["@type"] !== "LocalBusiness") fail("JSON-LD @type is not LocalBusiness");
+  if (data.name !== "Fanovation Builds") fail("JSON-LD name is not Fanovation Builds");
+  if (data.url !== "https://fanovationbuilds.com/") fail(`JSON-LD url is ${data.url}`);
+  const sameAs = Array.isArray(data.sameAs) ? data.sameAs : [];
+  if (!sameAs.includes(YOUTUBE)) fail("JSON-LD sameAs is missing the YouTube channel");
+  if (data.image !== `${origin}/images/logo.webp`) fail("JSON-LD image is not the logo");
   const address = data.address || {};
   if (address.addressRegion !== "NY" || address.addressLocality !== "New York") {
     fail("JSON-LD address should be New York, NY, with no narrower place");
@@ -167,6 +185,11 @@ else {
   if (!/apprentice/i.test(restoration) || !/Vollana/.test(restoration)) {
     fail("JSON-LD restoration service does not credit Vollana");
   }
+}
+
+const about = htmlByRel.get("about/index.html");
+if (about && !about.includes("Estefano at Fanovation Builds")) {
+  fail("About page should name Estefano at Fanovation Builds");
 }
 
 const restoration = htmlByRel.get("restoration/index.html");
@@ -282,6 +305,21 @@ for (const project of projects) {
 const css = read("css/site.css");
 for (const banned of ["fonts.googleapis.com", "fonts.gstatic.com"]) {
   if (css.includes(banned)) fail(`CSS includes ${banned}`);
+}
+if (!css.includes("hero-banner.webp")) fail("Home hero is not using the channel banner");
+for (const asset of ["images/logo.webp", "images/hero-banner.webp", "favicon-32.png", "favicon-192.png", "apple-touch-icon.png"]) {
+  if (!fs.existsSync(path.join(dist, asset))) fail(`Missing dist/${asset}`);
+}
+if (fs.existsSync(path.join(root, "CNAME"))) {
+  fail("Do not add a CNAME file. Actions-based Pages ignores it; set the domain in the repository Pages settings.");
+}
+if (site.name !== "Fanovation Builds") fail("data/site.json name should be Fanovation Builds");
+if (origin !== "https://fanovationbuilds.com" || basePath !== "") {
+  fail(`Site should be https://fanovationbuilds.com at /. Got ${origin} ${basePath || "/"}`);
+}
+const homeCanonical = home.match(/<link rel="canonical" href="([^"]+)">/);
+if (!homeCanonical || homeCanonical[1] !== "https://fanovationbuilds.com/") {
+  fail("Home canonical is not https://fanovationbuilds.com/");
 }
 
 if (failures.length) {

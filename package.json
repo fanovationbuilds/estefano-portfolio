@@ -6,6 +6,6 @@
     "build": "node scripts/build.js",
     "check": "node scripts/check.js",
     "preview": "node scripts/preview.js",
-    "test": "node --test scripts/validate-quote.test.js"
+    "test": "node --test scripts/validate-quote.test.js scripts/site-url.test.js"
   }
 }

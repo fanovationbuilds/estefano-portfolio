@@ -2,6 +2,10 @@ Source Serif 4 and Source Sans 3
 Copyright 2014-2023 Adobe, with Reserved Font Name "Source" (Source Serif).
 Copyright 2010-2024 Adobe, with Reserved Font Name "Source" (Source Sans).
 
+Outfit
+Copyright 2021 The Outfit Project Authors (https://github.com/Outfitio/Outfit-Fonts),
+with Reserved Font Name "Outfit".
+
 The files in this folder are Latin-subset WOFF2 builds of those families,
 used under the SIL Open Font License below. The font names are unchanged.
 

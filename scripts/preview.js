@@ -2,11 +2,12 @@ import fs from "node:fs";
 import http from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { resolveSite } from "./site-url.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const dist = path.join(root, "dist");
 const site = JSON.parse(fs.readFileSync(path.join(root, "data/site.json"), "utf8"));
-const basePath = new URL(site.url).pathname.replace(/\/$/, "");
+const { basePath } = resolveSite(site);
 const port = Number(process.env.PORT || 4173);
 
 const types = {

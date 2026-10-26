@@ -1,8 +1,16 @@
-# Estefano
+# Fanovation Builds
 
-Portfolio site for renovation, custom carpentry, and antique wood restoration in New York City. Static HTML, CSS, and a little JavaScript. Hosted on GitHub Pages. No paid services and no trackers.
+Portfolio site for hiring Estefano at Fanovation Builds: renovation, custom carpentry, and antique wood restoration in New York City. Static HTML, CSS, and a little JavaScript. Hosted on GitHub Pages. No paid services and no trackers.
 
-The published address this repo is set up for is `https://fanovationbuilds.github.io/estefano-portfolio/`. Change `url` in `data/site.json` if that changes, then rebuild.
+The tagline is "Real renovations. Real results." The site is for hiring him. It does not repeat the YouTube channel's DIY or tutorial language. Job videos are linked from the footer and the about page: [youtube.com/@FanovationBuilds](https://www.youtube.com/@FanovationBuilds).
+
+## Address
+
+`url` in `data/site.json` is the one setting for the canonical origin and the path prefix. It is `https://fanovationbuilds.com`, so canonical URLs, the sitemap, `robots.txt`, JSON-LD, and every page and asset link use that origin at `/`.
+
+The same code still accepts a project path. Set `url` to `https://fanovationbuilds.github.io/estefano-portfolio` and rebuild if the site has to be served from `/estefano-portfolio/` again.
+
+DNS for `fanovationbuilds.com` already points at GitHub Pages. The custom domain itself is turned on in the repository Pages settings (Actions deploy). This repo does not include a CNAME file. GitHub ignores a CNAME file when Pages is published with a custom workflow.
 
 ## Preview
 
@@ -11,9 +19,9 @@ node scripts/build.js
 node scripts/preview.js
 ```
 
-Open the URL the preview script prints. It serves the site at the GitHub Pages project path, which is how the links are written.
+Open the URL the preview script prints. It serves the site at the path in `url`, which is `/` for `fanovationbuilds.com`.
 
-`node scripts/check.js` checks links, the quote form, local SEO tags, and the Vollana credit. `node --test scripts/validate-quote.test.js` checks form validation.
+`node scripts/check.js` checks links, the quote form, local SEO tags, the Fanovation Builds name, and the Vollana credit. `node --test scripts/validate-quote.test.js scripts/site-url.test.js` checks form validation and the Pages path versus the domain root.
 
 ## Pages
 
@@ -47,7 +55,7 @@ Edit `data/projects.json`. One object per job:
 
 Leave `before` and `after` out to get a labeled placeholder drawing. Placeholder alt text has to say it is a placeholder and not a photograph.
 
-Restoration projects must set `"apprenticeship": true`. The site then credits Vollana Antiques on the project, the restoration page, and the footer, and it does not present the shop's pieces as Estefano's alone. Do not add a restoration project that was not done there unless you also change that credit in `scripts/build.js`.
+Restoration projects must set `"apprenticeship": true`. The site then credits Vollana Antiques on the project, the restoration page, and the footer, and it does not present the shop's pieces as Estefano's alone. Do not add a restoration project that was not done there unless you also change that credit in `scripts/build.js`. Do not add real client photos until there are real job photos to process.
 
 ## Add a real photo
 
@@ -74,7 +82,7 @@ If that constant is empty or still a placeholder, a valid submit stays on the pa
 A script that logs a row and saves photos to Drive:
 
 ```javascript
-var FOLDER_NAME = "Estefano quote photos";
+var FOLDER_NAME = "Fanovation Builds quote photos";
 
 function doPost(e) {
   var data = JSON.parse(e.postData.contents);
@@ -124,17 +132,12 @@ Phone on the about page and in the footer is [(347) 746-9070](tel:+13477469070).
 
 `.github/workflows/pages.yml` builds `dist/` and deploys it with GitHub Actions on every push to `main`. Pull requests build and check, and do not deploy.
 
-This repository does not have a Pages site yet. Turning the site on is a repository setting, and the workflow token is not allowed to change it. `actions/configure-pages` is set to try (`enablement: true`). Until the setting below is flipped, the deploy job fails with "Resource not accessible by integration" or "Get Pages site failed … Not Found".
+The published address is `https://fanovationbuilds.com/`. Source is GitHub Actions. Set the custom domain in Settings → Pages when this is on `main`. The workflow still calls `actions/configure-pages` with `enablement: true`. That step only matters if Pages is turned off; the default token cannot create the Pages site by itself.
 
-What to flip, once, in the browser:
+## Brand files
 
-1. Open the repository on GitHub.
-2. Settings → Pages.
-3. Under Build and deployment, set Source to **GitHub Actions**.
-4. Re-run the "Publish to GitHub Pages" workflow on `main` if the first deploy failed before this.
-
-After that, the same workflow publishes on each push to `main`. The site URL is `https://fanovationbuilds.github.io/estefano-portfolio/`.
+`src/images/logo.webp` and the favicons (`src/favicon-32.png`, `src/favicon-192.png`, `src/apple-touch-icon.png`) are web-sized crops of the channel avatar. `src/images/hero-banner.webp` is a compressed copy of the channel banner, used as a faint background behind the home hero. There is no vector logo.
 
 ## Fonts
 
-Source Serif 4 and Source Sans 3 are self-hosted in `src/fonts/` under the SIL Open Font License (`src/fonts/OFL.txt`).
+Outfit (headings), Source Serif 4 (body), and Source Sans 3 (interface) are self-hosted in `src/fonts/` under the SIL Open Font License (`src/fonts/OFL.txt`). Headings are set in uppercase Outfit.
