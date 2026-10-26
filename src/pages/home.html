@@ -1,64 +1,46 @@
 <section class="hero">
   <div class="hero__copy">
     <p class="kicker">New York City</p>
-    <h1>Real renovations. <span class="h1-break">Real results.</span></h1>
-    <p class="lede">Fanovation Builds is Estefano's practice in New York City. Jobs run from a whole-apartment renovation to a single cabinet or one piece of furniture.</p>
-    <p class="hero__actions"><a class="button" href="{{page:quote}}">Request a quote</a></p>
+    <h1>Antique repair and wood restoration.</h1>
+    <p class="lede">Estefano repairs furniture and restores wood finishes for Fanovation Builds. One piece is a real job.</p>
+    <p class="hero__actions"><a class="button" href="{{page:quote}}">Request a restoration quote</a></p>
   </div>
   <div class="hero__media">
     {{featured-hero}}
   </div>
 </section>
 
-<section class="section" aria-labelledby="services-heading">
-  <h2 id="services-heading">Three services</h2>
-  <ol class="service-list">
-    <li>
-      <a href="{{page:restoration}}">
-        <span class="service-list__num">01</span>
-        <span class="service-list__body">
-          <span class="service-list__title">Antique repair and wood restoration</span>
-          <span class="service-list__text">Work he did as an apprentice at Vollana Antiques, shown with the shop's permission.</span>
-        </span>
-        <span class="service-list__go">See the work</span>
-      </a>
-    </li>
-    <li>
-      <a href="{{page:carpentry}}">
-        <span class="service-list__num">02</span>
-        <span class="service-list__body">
-          <span class="service-list__title">Custom carpentry</span>
-          <span class="service-list__text">Kitchen cabinets, doors, closets, and built-ins.</span>
-        </span>
-        <span class="service-list__go">See the work</span>
-      </a>
-    </li>
-    <li>
-      <a href="{{page:renovations}}">
-        <span class="service-list__num">03</span>
-        <span class="service-list__body">
-          <span class="service-list__title">Full renovations</span>
-          <span class="service-list__text">Plumbing, electrical, kitchens, bathrooms, framing, and flooring.</span>
-        </span>
-        <span class="service-list__go">See the work</span>
-      </a>
-    </li>
-  </ol>
+<section class="section service-lead" aria-labelledby="services-heading">
+  <h2 id="services-heading">Antique repair and wood restoration</h2>
+  <aside class="credit-banner">
+    <p>Restoration work done together with <a href="https://vollana-antiques.com/">Vollana Antiques</a>, drawing on their 40 years of experience with antiques, restoration, and woodwork. These are the shop's pieces, shown with their permission. They are not presented as his alone.</p>
+  </aside>
+  {{testimonial}}
+  <p class="hero__actions"><a class="button" href="{{page:quote}}">Request a restoration quote</a></p>
 </section>
 
-{{testimonial}}
-
-<section class="section" aria-labelledby="selected-heading">
-  <h2 id="selected-heading">Selected work</h2>
-  <p class="note">Drag a photo to compare before and after. The pictures are labeled placeholders until real job photos are added.</p>
+<section class="section service-next" aria-labelledby="carpentry-lead">
+  <h2 id="carpentry-lead">Custom carpentry</h2>
+  <p>Restoration is often how the work starts. It leads to kitchen cabinets, custom doors, closets, and built-ins.</p>
   <div class="project-list">
-    {{featured-rest}}
+    {{featured-carpentry}}
   </div>
-  <p><a href="{{page:work}}">All projects</a></p>
+  <p><a href="{{page:carpentry}}">See the carpentry</a></p>
+</section>
+
+<section class="section service-later" aria-labelledby="renovations-lead">
+  <h2 id="renovations-lead">Full renovations</h2>
+  <p>Plumbing, electrical, kitchens, bathrooms, framing, and flooring, when a job needs them.</p>
+  <p><a href="{{page:renovations}}">See renovations</a></p>
+</section>
+
+<section class="section" id="selected-heading" aria-labelledby="all-work-heading">
+  <h2 id="all-work-heading">All projects</h2>
+  <p><a href="{{page:work}}">Before and after</a></p>
 </section>
 
 <section class="section" aria-labelledby="area-heading">
   <h2 id="area-heading">Service area</h2>
   <p class="lede">NYC.</p>
-  <p><a class="button" href="{{page:quote}}">Request a quote</a></p>
+  <p><a href="{{page:quote}}">Request a quote</a></p>
 </section>

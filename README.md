@@ -51,11 +51,11 @@ Edit `data/projects.json`. One object per job:
 }
 ```
 
-`service` is `renovation`, `carpentry`, or `restoration`. The first `featured` project is the large one on the home page. Others marked `featured` sit under Selected work.
+`service` is `renovation`, `carpentry`, or `restoration`. The first `featured` project should be restoration. It is the large piece in the home hero. A featured carpentry project sits in the next section.
 
 Leave `before` and `after` out to get a labeled placeholder drawing. Placeholder alt text has to say it is a placeholder and not a photograph.
 
-Restoration projects must set `"apprenticeship": true`. The site then credits Vollana Antiques on the project, the restoration page, and the footer, and it does not present the shop's pieces as Estefano's alone. Do not add a restoration project that was not done there unless you also change that credit in `scripts/build.js`. Do not add real client photos until there are real job photos to process.
+Every restoration project is credited to Vollana Antiques on the project, the restoration page, and the footer. The pieces are the shop's, shown with permission, not Estefano's alone. The shop's 40 years of experience is theirs. Do not add a restoration project that was not done with them unless you also change that credit in `scripts/build.js`. Do not add real client photos until there are real job photos to process.
 
 ## Add a real photo
 

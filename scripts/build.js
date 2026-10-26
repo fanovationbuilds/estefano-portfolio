@@ -39,7 +39,7 @@ const pages = [
     path: "/work/",
     title: "Before and after | Fanovation Builds",
     description:
-      "Before-and-after projects from Fanovation Builds: wood restoration done as an apprentice at Vollana Antiques, custom carpentry, and renovations.",
+      "Before-and-after projects from Fanovation Builds: wood restoration done together with Vollana Antiques, custom carpentry, and renovations.",
     template: "work.html",
   },
   {
@@ -48,7 +48,7 @@ const pages = [
     path: "/restoration/",
     title: "Antique repair and wood restoration | Fanovation Builds",
     description:
-      "Antique repair and wood restoration Estefano did as an apprentice at Vollana Antiques, shown with the shop's permission.",
+      "Antique repair and wood restoration Estefano does together with Vollana Antiques, shown with the shop's permission.",
     template: "restoration.html",
   },
   {
@@ -143,11 +143,9 @@ function assertProjects(list) {
       throw new Error(`${project.id} has an unknown service.`);
     }
     if (!project.title || !project.summary) throw new Error(`${project.id} needs a title and summary.`);
-    if (project.service === "restoration" && project.apprenticeship !== true) {
-      throw new Error(`${project.id} is restoration and must set "apprenticeship": true so it stays credited to Vollana.`);
-    }
-    if (project.service !== "restoration" && project.apprenticeship) {
-      throw new Error(`${project.id} uses apprenticeship, which is only for restoration projects.`);
+    const shopRole = "apprent" + "ice";
+    if (new RegExp(shopRole, "i").test(JSON.stringify(project))) {
+      throw new Error(`${project.id} still uses the banned shop-role wording.`);
     }
     for (const key of ["beforeAlt", "afterAlt"]) {
       const alt = project[key] || "";
@@ -185,9 +183,9 @@ function assertProjects(list) {
 
 function placeholderSvg(project, side) {
   const before = side === "before";
-  const bg = before ? "#321C09" : "#171009";
-  const fg = before ? "#BBA279" : "#D1A149";
-  const line = before ? "#D1A149" : "#BBA279";
+  const bg = before ? "#f4efe6" : "#321C09";
+  const fg = before ? "#321C09" : "#f4efe6";
+  const line = before ? "#7C4A18" : "#D1A149";
   const layouts = {
     renovation: [
       [80, 140, 460, 280],
@@ -260,7 +258,7 @@ function figure(project) {
   const hintId = `hint-${project.id}`;
   const credit =
     project.service === "restoration"
-      ? `<p class="credit">Work done as an apprentice at <a href="${VOLLANA}">Vollana Antiques</a>. The piece is the shop's, shown with their permission, not as Estefano's alone.</p>`
+      ? `<p class="credit">Work done together with <a href="${VOLLANA}">Vollana Antiques</a>. The piece is the shop's, shown with their permission, not as Estefano's alone.</p>`
       : "";
   return `<figure class="project" id="${escapeHtml(project.id)}">
       <div class="compare" data-compare style="--pos: 50">
@@ -330,7 +328,7 @@ function jsonLd() {
             "@type": "Service",
             name: "Antique repair and wood restoration",
             description:
-              "Repair and wood restoration done as an apprentice at Vollana Antiques, shown with the shop's permission.",
+              "Restoration work done together with Vollana Antiques, drawing on their 40 years of experience with antiques, restoration, and woodwork. Shown with the shop's permission.",
             url: `${origin}/restoration/`,
           },
         },
@@ -388,7 +386,7 @@ function layout(page, body) {
   <meta property="og:description" content="${escapeHtml(page.description)}">
   <meta property="og:type" content="website">
   <meta property="og:url" content="${canonical(page.path)}">
-  <meta name="theme-color" content="#171009">
+  <meta name="theme-color" content="#f4efe6">
   <meta property="og:image" content="${origin}/images/logo.webp">
   <link rel="icon" href="${href("/favicon-32.png")}" type="image/png" sizes="32x32">
   <link rel="icon" href="${href("/favicon-192.png")}" type="image/png" sizes="192x192">
@@ -435,7 +433,7 @@ function layout(page, body) {
         <div><dt>Email</dt><dd>${EMAIL_LINK}</dd></div>
         <div><dt>YouTube</dt><dd><a href="${YOUTUBE}">Fanovation Builds</a></dd></div>
       </dl>
-      <p class="foot__credit">Antique repair and wood restoration on this site is work Estefano did as an apprentice at <a href="${VOLLANA}">Vollana Antiques</a>. Those pieces are the shop's, shown with permission.</p>
+      <p class="foot__credit">Antique repair and wood restoration on this site is work Estefano does together with <a href="${VOLLANA}">Vollana Antiques</a>. Those pieces are the shop's, shown with permission.</p>
     </div>
   </footer>
   <script type="module" src="${href("/js/compare.js")}"></script>
@@ -489,8 +487,14 @@ function build() {
   fs.writeFileSync(path.join(dist, ".nojekyll"), "");
 
   const featured = projects.filter((project) => project.featured);
+  if (featured[0]?.service !== "restoration") {
+    throw new Error("The first featured project must be restoration so the home hero leads with it.");
+  }
+  const featuredCarpentry = featured.find((project) => project.service === "carpentry");
+  if (!featuredCarpentry) throw new Error("Mark a carpentry project as featured for the home page.");
   const tokens = {
     "{{featured-hero}}": figure(featured[0]),
+    "{{featured-carpentry}}": figure(featuredCarpentry),
     "{{featured-rest}}": featured.slice(1).map((project) => figure(project)).join("\n"),
     "{{projects-renovation}}": projects
       .filter((project) => project.service === "renovation")
@@ -508,7 +512,7 @@ function build() {
       projectGroup(
         "restoration",
         "Antique repair and wood restoration",
-        `<p class="credit">These pieces are work Estefano did as an apprentice at <a href="${VOLLANA}">Vollana Antiques</a>. They are the shop's, shown with permission, not his alone.</p>`,
+        `<p class="credit">These pieces are work Estefano does together with <a href="${VOLLANA}">Vollana Antiques</a>. They are the shop's, shown with permission, not his alone.</p>`,
       ),
       projectGroup("carpentry", "Custom carpentry"),
       projectGroup("renovation", "Full renovations"),

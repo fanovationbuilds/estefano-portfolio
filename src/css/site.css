@@ -47,27 +47,24 @@
 }
 
 :root {
-  /* #BBA279 on #171009 is about 7.7:1, so body text stays the brand cream. */
-  --ink: #171009;
+  --paper: #f4efe6;
+  --paper-2: #e7dfd0;
+  --sheet: #faf7f1;
+  --ink: #1c1915;
+  --ink-soft: #3f3832;
+  --line: #d5ccbc;
   --brown: #321C09;
   --gold: #D1A149;
-  --cream: #BBA279;
   --copper: #7C4A18;
-  --line: #9A6230;
-  --danger: #F0C2B4;
-  --ok: #d7ecdf;
-  --ok-bg: #1c3326;
-  --paper: var(--cream);
-  --paper-2: var(--brown);
-  --sheet: var(--brown);
-  --ink-soft: var(--cream);
-  --wood: var(--gold);
+  --danger: #7f1d1d;
+  --todo-bg: #f3e4c0;
+  --ok-bg: #e4efe6;
   --max: 72rem;
   --measure: 40rem;
   --display: "Outfit", "Avenir Next", "Century Gothic", sans-serif;
   --serif: "Source Serif 4", "Iowan Old Style", Palatino, "Palatino Linotype", Georgia, serif;
   --sans: "Source Sans 3", "Avenir Next", "Segoe UI", sans-serif;
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 *,
@@ -82,8 +79,8 @@ html {
 
 body {
   margin: 0;
-  background: var(--ink);
-  color: var(--cream);
+  background: var(--paper);
+  color: var(--ink);
   font-family: var(--serif);
   font-size: 1.125rem;
   line-height: 1.55;
@@ -96,11 +93,11 @@ img {
 }
 
 a {
-  color: var(--gold);
+  color: var(--copper);
 }
 
 a:hover {
-  color: var(--cream);
+  color: var(--brown);
 }
 
 :focus {
@@ -108,13 +105,13 @@ a:hover {
 }
 
 :focus-visible {
-  outline: 3px solid var(--gold);
+  outline: 3px solid var(--brown);
   outline-offset: 3px;
 }
 
 ::selection {
-  background: var(--copper);
-  color: var(--cream);
+  background: #e8d3a8;
+  color: var(--ink);
 }
 
 .skip {
@@ -122,8 +119,8 @@ a:hover {
   left: 0.75rem;
   top: 0.75rem;
   transform: translateY(-200%);
-  background: var(--gold);
-  color: var(--ink);
+  background: var(--brown);
+  color: var(--paper);
   font-family: var(--sans);
   text-decoration: none;
   padding: 0.5rem 0.75rem;
@@ -152,7 +149,14 @@ a:hover {
 }
 
 .mast {
-  border-bottom: 1px solid var(--gold);
+  border-bottom: 3px solid var(--brown);
+}
+
+.mast::after {
+  content: "";
+  display: block;
+  border-bottom: 1px solid var(--brown);
+  margin-top: 4px;
 }
 
 .mast__inner {
@@ -175,6 +179,12 @@ a:hover {
   height: 3.25rem;
   flex: none;
   display: block;
+  border-radius: 50%;
+  object-fit: cover;
+  background: var(--brown);
+  box-shadow: 0 0 0 2px var(--brown);
+  outline: 2px solid var(--copper);
+  outline-offset: 2px;
 }
 
 .wordmark__name {
@@ -184,7 +194,7 @@ a:hover {
   letter-spacing: 0.14em;
   text-transform: uppercase;
   line-height: 1.05;
-  color: var(--cream);
+  color: var(--brown);
 }
 
 .brand__place {
@@ -210,7 +220,7 @@ a:hover {
 }
 
 .nav__list a {
-  color: inherit;
+  color: var(--ink);
   text-decoration: none;
   font-family: var(--sans);
   font-size: 1rem;
@@ -218,21 +228,21 @@ a:hover {
 
 .nav__list a:hover,
 .nav__list a[aria-current="page"] {
-  color: var(--gold);
+  color: var(--copper);
   text-decoration: underline;
   text-underline-offset: 0.22em;
 }
 
 .nav__cta a {
   background: var(--gold);
-  color: var(--ink);
+  color: var(--brown);
   text-decoration: none;
   padding: 0.5rem 0.75rem;
 }
 
 .nav__cta a:hover {
-  background: var(--cream);
-  color: var(--ink);
+  background: var(--brown);
+  color: var(--paper);
 }
 
 h1,
@@ -252,7 +262,7 @@ h1,
 h2,
 .project__title,
 .foot__name {
-  color: var(--gold);
+  color: var(--brown);
 }
 
 h1 {
@@ -276,7 +286,7 @@ h2 {
   font-weight: 600;
   letter-spacing: 0.16em;
   text-transform: uppercase;
-  color: var(--cream);
+  color: var(--copper);
 }
 
 .lede {
@@ -307,7 +317,7 @@ main p,
   width: 100vw;
   transform: translateX(-50%);
   background:
-    linear-gradient(180deg, rgba(23, 16, 9, 0.78) 0%, rgba(23, 16, 9, 0.9) 62%, #171009 100%),
+    linear-gradient(180deg, rgba(244, 239, 230, 0.92) 0%, rgba(244, 239, 230, 0.96) 58%, #f4efe6 100%),
     url("../images/hero-banner.webp") center 42% / cover no-repeat;
   pointer-events: none;
 }
@@ -318,6 +328,29 @@ main p,
 
 .section {
   margin-top: 3.4rem;
+}
+
+.service-lead h2 {
+  font-size: clamp(1.85rem, 3.2vw, 2.5rem);
+}
+
+.service-next .project-list {
+  max-width: 34rem;
+}
+
+.service-later {
+  margin-top: 2.2rem;
+  padding-top: 1.2rem;
+  border-top: 1px solid var(--line);
+}
+
+.service-later h2 {
+  font-size: 1.05rem;
+  letter-spacing: 0.08em;
+}
+
+.service-later p {
+  font-size: 1rem;
 }
 
 .note,
@@ -346,7 +379,7 @@ main p,
 .button {
   display: inline-block;
   background: var(--gold);
-  color: var(--ink);
+  color: var(--brown);
   text-decoration: none;
   padding: 0.72rem 1rem;
   border: 2px solid var(--gold);
@@ -355,16 +388,16 @@ main p,
 }
 
 .button:hover {
-  background: var(--cream);
-  border-color: var(--cream);
-  color: var(--ink);
+  background: var(--brown);
+  border-color: var(--brown);
+  color: var(--paper);
 }
 
 .service-list {
   list-style: none;
   margin: 0;
   padding: 0;
-  border-top: 1px solid var(--line);
+  border-top: 1px solid var(--brown);
 }
 
 .service-list a {
@@ -373,7 +406,7 @@ main p,
   gap: 0.25rem 0.9rem;
   align-items: baseline;
   padding: 1.1rem 0;
-  border-bottom: 1px solid var(--line);
+  border-bottom: 1px solid var(--brown);
   color: inherit;
   text-decoration: none;
 }
@@ -382,7 +415,7 @@ main p,
   font-family: var(--display);
   font-size: 1.15rem;
   letter-spacing: 0.08em;
-  color: var(--gold);
+  color: var(--copper);
 }
 
 .service-list__title {
@@ -401,7 +434,7 @@ main p,
 .service-list__go {
   grid-column: 2;
   font-family: var(--sans);
-  color: var(--gold);
+  color: var(--copper);
   text-decoration: underline;
   text-underline-offset: 0.18em;
 }
@@ -436,14 +469,14 @@ main p,
 }
 
 .credit {
-  border-left: 3px solid var(--wood);
+  border-left: 3px solid var(--copper);
   padding-left: 0.8rem;
 }
 
 .credit-banner {
   background: var(--brown);
-  color: var(--cream);
-  border: 1px solid var(--copper);
+  color: var(--paper);
+  border: none;
   padding: 1.05rem 1.15rem;
   max-width: 42rem;
   margin: 1.25rem 0 1.4rem;
@@ -455,7 +488,7 @@ main p,
 }
 
 .credit-banner a {
-  color: var(--gold);
+  color: var(--paper);
 }
 
 .testimonial {
@@ -466,7 +499,7 @@ main p,
 .testimonial blockquote {
   margin: 0;
   padding: 0 0 0 1rem;
-  border-left: 3px solid var(--wood);
+  border-left: 3px solid var(--copper);
 }
 
 .testimonial blockquote p {
@@ -487,8 +520,8 @@ main p,
   position: relative;
   aspect-ratio: 3 / 2;
   overflow: hidden;
-  background: var(--brown);
-  border: 1px solid var(--line);
+  background: var(--paper-2);
+  border: 1px solid var(--brown);
   container-type: inline-size;
   touch-action: none;
   cursor: ew-resize;
@@ -527,9 +560,9 @@ main p,
   top: 0.7rem;
   z-index: 2;
   padding: 0.18rem 0.45rem;
-  background: var(--ink);
-  color: var(--cream);
-  border: 1px solid var(--gold);
+  background: var(--paper);
+  color: var(--ink);
+  border: 1px solid var(--brown);
   font-family: var(--sans);
   font-size: 0.72rem;
   font-weight: 600;
@@ -553,7 +586,7 @@ main p,
   left: calc(var(--pos, 50) * 1%);
   width: 2px;
   transform: translateX(-50%);
-  background: var(--gold);
+  background: var(--paper);
   z-index: 2;
   pointer-events: none;
 }
@@ -569,8 +602,8 @@ main p,
     linear-gradient(var(--ink), var(--ink)) center 16px / 14px 1px no-repeat,
     linear-gradient(var(--ink), var(--ink)) center 24px / 14px 1px no-repeat,
     linear-gradient(var(--ink), var(--ink)) center 32px / 14px 1px no-repeat,
-    var(--gold);
-  border: 1px solid var(--gold);
+    var(--paper);
+  border: 1px solid var(--brown);
 }
 
 .compare__label {
@@ -591,7 +624,7 @@ main p,
 
 .compare__range::-webkit-slider-runnable-track {
   height: 2px;
-  background: var(--gold);
+  background: var(--brown);
 }
 
 .compare__range::-webkit-slider-thumb {
@@ -600,21 +633,21 @@ main p,
   width: 44px;
   height: 28px;
   margin-top: -13px;
-  background: var(--gold);
-  border: 2px solid var(--cream);
+  background: var(--paper);
+  border: 2px solid var(--brown);
 }
 
 .compare__range::-moz-range-track {
   height: 2px;
-  background: var(--gold);
+  background: var(--brown);
   border: 0;
 }
 
 .compare__range::-moz-range-thumb {
   width: 44px;
   height: 28px;
-  background: var(--gold);
-  border: 2px solid var(--cream);
+  background: var(--paper);
+  border: 2px solid var(--brown);
   border-radius: 0;
 }
 
@@ -633,8 +666,8 @@ main p,
 }
 
 .todo {
-  background: var(--brown);
-  border: 1px dashed var(--gold);
+  background: var(--todo-bg);
+  border: 1px dashed var(--copper);
   padding: 0.05rem 0.4rem;
   font-family: var(--sans);
   font-weight: 600;
@@ -668,8 +701,8 @@ main p,
   max-width: 40rem;
   margin-top: 1.5rem;
   padding: 1.15rem;
-  background: var(--brown);
-  border: 1px solid var(--line);
+  background: var(--sheet);
+  border: 1px solid var(--brown);
 }
 
 .ticket p,
@@ -713,11 +746,11 @@ textarea {
   width: 100%;
   min-height: 48px;
   padding: 0.6rem 0.7rem;
-  border: 1px solid var(--line);
+  border: 1px solid var(--brown);
   border-radius: 0;
-  background: var(--ink);
-  color: var(--cream);
-  caret-color: var(--gold);
+  background: #fffdf8;
+  color: var(--ink);
+  caret-color: var(--copper);
   font-family: var(--sans);
   font-size: 1rem;
   line-height: 1.4;
@@ -765,7 +798,7 @@ textarea[aria-invalid="true"] {
 .form-status:not(:empty) {
   margin: 0 0 1rem;
   padding: 0.75rem 0.85rem;
-  border: 1px solid var(--gold);
+  border: 1px solid var(--brown);
 }
 
 .form-errors {
@@ -773,13 +806,13 @@ textarea[aria-invalid="true"] {
 }
 
 .form-status:not(:empty) {
-  background: var(--brown);
-  color: var(--cream);
+  background: var(--todo-bg);
+  color: var(--ink);
 }
 
 .form-status.is-ok {
   background: var(--ok-bg);
-  color: var(--ok);
+  color: var(--ink);
 }
 
 .form-status.is-pending {
@@ -791,7 +824,7 @@ button[type="submit"] {
   padding: 0.7rem 1.1rem;
   border: 2px solid var(--gold);
   background: var(--gold);
-  color: var(--ink);
+  color: var(--brown);
   font-family: var(--sans);
   font-size: 1rem;
   font-weight: 600;
@@ -799,8 +832,9 @@ button[type="submit"] {
 }
 
 button[type="submit"]:hover {
-  background: var(--cream);
-  border-color: var(--cream);
+  background: var(--brown);
+  border-color: var(--brown);
+  color: var(--paper);
 }
 
 button[type="submit"]:disabled {
@@ -811,7 +845,7 @@ button[type="submit"]:disabled {
 .foot {
   margin-top: 4rem;
   padding: 1.4rem 0 2.8rem;
-  border-top: 1px solid var(--gold);
+  border-top: 3px solid var(--brown);
   font-size: 1rem;
 }
 
@@ -821,7 +855,7 @@ button[type="submit"]:disabled {
 }
 
 .foot__tagline {
-  color: var(--cream);
+  color: var(--ink-soft);
 }
 
 .foot p {
@@ -844,16 +878,19 @@ button[type="submit"]:disabled {
 }
 
 .foot a:not(.button) {
-  color: var(--gold);
+  color: var(--copper);
 }
 
 .foot a:not(.button):hover {
-  color: var(--cream);
+  color: var(--brown);
 }
 
-.foot a.button,
+.foot a.button {
+  color: var(--brown);
+}
+
 .foot a.button:hover {
-  color: var(--ink);
+  color: var(--paper);
 }
 
 @media (min-width: 720px) {

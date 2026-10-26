@@ -11,6 +11,8 @@ const { projects } = JSON.parse(fs.readFileSync(path.join(root, "data/projects.j
 const { origin, basePath } = resolveSite(site);
 const YOUTUBE = "https://www.youtube.com/@FanovationBuilds";
 const TAGLINE = "Real renovations. Real results.";
+const shopRole = "apprent" + "ice";
+const shopRolePattern = new RegExp(shopRole, "i");
 const failures = [];
 
 function fail(message) {
@@ -93,7 +95,11 @@ for (const [rel, html] of htmlByRel) {
   for (const banned of ["DIY", "diy", "tutorial", "step-by-step"]) {
     if (html.includes(banned)) fail(`${rel} uses channel tutorial language: ${banned}`);
   }
-  if (!html.includes("apprentice")) fail(`${rel} missing apprenticeship credit`);
+  if (shopRolePattern.test(html)) fail(`${rel} still uses the banned shop-role word`);
+  if (!html.includes("together with")) fail(`${rel} missing the Vollana partnership line`);
+  if ((rel === "index.html" || rel === "restoration/index.html") && !html.includes("their 40 years of experience")) {
+    fail(`${rel} should credit Vollana's 40 years`);
+  }
   if (/\$\s?\d/.test(html)) fail(`${rel} appears to list a price`);
   const otherNumbers = html
     .replaceAll("(347) 746-9070", "")
@@ -182,7 +188,8 @@ else {
   }
   if ("review" in data || "aggregateRating" in data) fail("JSON-LD includes a review rating");
   const restoration = JSON.stringify(services);
-  if (!/apprentice/i.test(restoration) || !/Vollana/.test(restoration)) {
+  if (shopRolePattern.test(restoration)) fail("JSON-LD still uses the banned shop-role word");
+  if (!/together with Vollana/i.test(restoration) || !/their 40 years/.test(restoration)) {
     fail("JSON-LD restoration service does not credit Vollana");
   }
 }
@@ -198,7 +205,7 @@ if (restoration && !restoration.includes("not presented as his alone")) {
 }
 for (const project of projects.filter((item) => item.service === "restoration")) {
   if (!restoration.includes(`id="${project.id}"`)) fail(`Restoration page missing ${project.id}`);
-  if (!restoration.includes("not as Estefano's alone")) fail("Restoration project caption missing the apprenticeship credit");
+  if (!restoration.includes("not as Estefano's alone")) fail("Restoration project caption missing the Vollana credit");
 }
 
 const work = htmlByRel.get("work/index.html");
@@ -269,6 +276,18 @@ if (!comesBefore(footer, "Antique repair and wood restoration", "Custom carpentr
 const cards = home.slice(home.indexOf('id="services-heading"'), home.indexOf('id="selected-heading"'));
 if (!comesBefore(cards, "Antique repair and wood restoration", "Custom carpentry") || !comesBefore(cards, "Custom carpentry", "Full renovations")) {
   fail("Home service card order is wrong");
+}
+const hero = home.slice(home.indexOf('class="hero"'), home.indexOf('id="services-heading"'));
+if (/renovation/i.test(hero)) fail("Home hero should not lead with renovations");
+
+const textExt = new Set([".html", ".js", ".json", ".css", ".md", ".svg", ".txt", ".yml"]);
+const sourceFiles = ["src", "scripts", "data"].flatMap((dir) => walk(path.join(root, dir)));
+sourceFiles.push(path.join(root, "README.md"));
+for (const file of sourceFiles) {
+  if (!textExt.has(path.extname(file))) continue;
+  if (shopRolePattern.test(fs.readFileSync(file, "utf8"))) {
+    fail(`${path.relative(root, file)} still uses the banned shop-role word`);
+  }
 }
 
 const robots = read("robots.txt");
