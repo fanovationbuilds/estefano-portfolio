@@ -66,10 +66,12 @@ for (const [rel, html] of htmlByRel) {
     fail(`${rel} meta description is ${description[1].length} characters`);
   }
   if (!html.includes('rel="canonical"')) fail(`${rel} missing canonical`);
-  const phoneTodos = html.match(/<dt>Phone<\/dt>\s*<dd class="todo">TODO<\/dd>/g) || [];
-  const expectedPhones = rel === "about/index.html" ? 2 : 1;
-  if (phoneTodos.length !== expectedPhones) fail(`${rel} has ${phoneTodos.length} phone TODOs`);
-  if (/<dt>Email<\/dt>\s*<dd class="todo">/.test(html)) fail(`${rel} email is still a TODO`);
+  if (html.includes('class="todo"') || />TODO</.test(html)) fail(`${rel} still has a contact TODO`);
+  const tel = 'href="tel:+13477469070"';
+  const telCount = html.split(tel).length - 1;
+  const expectedTels = rel === "about/index.html" ? 2 : 1;
+  if (telCount !== expectedTels) fail(`${rel} has ${telCount} phone links`);
+  if ((html.split("(347) 746-9070").length - 1) !== expectedTels) fail(`${rel} phone label is wrong`);
   const mailto = 'href="mailto:queborealestate@gmail.com?subject=Quote%20request"';
   const mailtoCount = html.split(mailto).length - 1;
   const expectedMailtos = rel === "about/index.html" ? 2 : 1;
@@ -81,8 +83,12 @@ for (const [rel, html] of htmlByRel) {
   if (!html.includes("https://vollana-antiques.com/")) fail(`${rel} missing Vollana link`);
   if (!html.includes("apprentice")) fail(`${rel} missing apprenticeship credit`);
   if (/\$\s?\d/.test(html)) fail(`${rel} appears to list a price`);
-  if (/\b\d{3}[-.)]\s?\d{3}[-.]\d{4}\b/.test(html) || /\(\d{3}\)\s*\d{3}/.test(html)) {
-    fail(`${rel} appears to contain a phone number`);
+  const otherNumbers = html
+    .replaceAll("(347) 746-9070", "")
+    .replaceAll("tel:+13477469070", "")
+    .replaceAll("+1-347-746-9070", "");
+  if (/\b\d{3}[-.)]\s?\d{3}[-.]\d{4}\b/.test(otherNumbers) || /\(\d{3}\)\s*\d{3}/.test(otherNumbers)) {
+    fail(`${rel} has another phone number`);
   }
   for (const banned of ["fonts.googleapis.com", "googletagmanager", "google-analytics", "facebook.net", "hotjar"]) {
     if (html.includes(banned)) fail(`${rel} includes ${banned}`);
@@ -96,6 +102,11 @@ for (const [rel, html] of htmlByRel) {
     let url = match[1];
     if (url.startsWith("https://vollana-antiques.com/")) continue;
     if (url === "mailto:queborealestate@gmail.com?subject=Quote%20request") continue;
+    if (url === "tel:+13477469070") continue;
+    if (url.startsWith("tel:")) {
+      fail(`${rel} has an unexpected tel: ${url}`);
+      continue;
+    }
     if (url.startsWith("mailto:")) {
       fail(`${rel} has an unexpected mailto: ${url}`);
       continue;
@@ -135,7 +146,8 @@ else {
     fail("JSON-LD address should be New York, NY, with no narrower place");
   }
   if ("postalCode" in address || "streetAddress" in address) fail("JSON-LD includes a street or postal code");
-  for (const key of ["telephone", "email", "priceRange", "aggregateRating", "review"]) {
+  if (data.telephone !== "+1-347-746-9070") fail("JSON-LD telephone is missing or wrong");
+  for (const key of ["email", "priceRange", "aggregateRating", "review"]) {
     if (key in data) fail(`JSON-LD includes ${key}`);
   }
   if (JSON.stringify(data).includes("queborealestate@gmail.com")) fail("JSON-LD includes the email address");

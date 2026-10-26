@@ -118,7 +118,7 @@ Deploy it as a web app, execute as yourself, access "Anyone". Put the `/exec` UR
 
 ## Contact details
 
-Email on the about page and in the footer is an **Email me** button. The address is only in that `mailto:` link (subject `Quote request`). It is not printed on the page and it is not in the JSON-LD. Phone is still the visible text `TODO` in `scripts/build.js` and `src/pages/about.html`. Do not invent a number, a license, a review, a price, or years of experience. `scripts/check.js` fails if a phone-number pattern shows up before you remove that guard.
+Phone on the about page and in the footer is [(347) 746-9070](tel:+13477469070). The same number is `telephone` in the LocalBusiness JSON-LD as `+1-347-746-9070`. Email is an **Email me** button. That address is only in the `mailto:` link (subject `Quote request`). It is not printed on the page and it is not in the JSON-LD. Do not add another number, a license, a review, a price, or years of experience.
 
 ## GitHub Pages
 

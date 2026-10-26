@@ -15,6 +15,7 @@ const basePath = new URL(site.url).pathname.endsWith("/")
 const VOLLANA = "https://vollana-antiques.com/";
 const EMAIL_LINK =
   '<a class="button" href="mailto:queborealestate@gmail.com?subject=Quote%20request">Email me</a>';
+const PHONE_LINK = '<a href="tel:+13477469070">(347) 746-9070</a>';
 const SERVICES = ["restoration", "carpentry", "renovation"];
 const SERVICE_LABEL = {
   renovation: "Full renovation",
@@ -319,6 +320,7 @@ function jsonLd() {
       "Antique wood restoration, custom carpentry, and full renovations in New York City.",
     url: `${origin}/`,
     image: `${origin}/favicon.svg`,
+    telephone: "+1-347-746-9070",
     address: {
       "@type": "PostalAddress",
       addressLocality: "New York",
@@ -433,7 +435,7 @@ function layout(page, body) {
           .join("")}
       </ul>
       <dl class="contact">
-        <div><dt>Phone</dt><dd class="todo">TODO</dd></div>
+        <div><dt>Phone</dt><dd>${PHONE_LINK}</dd></div>
         <div><dt>Email</dt><dd>${EMAIL_LINK}</dd></div>
       </dl>
       <p class="foot__credit">Antique repair and wood restoration on this site is work Estefano did as an apprentice at <a href="${VOLLANA}">Vollana Antiques</a>. Those pieces are the shop's, shown with permission.</p>
@@ -514,6 +516,7 @@ function build() {
     ].join("\n"),
     "{{testimonial}}": testimonialHtml,
     "{{email-link}}": EMAIL_LINK,
+    "{{phone-link}}": PHONE_LINK,
   };
 
   for (const page of pages) {
