@@ -843,12 +843,17 @@ button[type="submit"]:disabled {
   color: inherit;
 }
 
-.foot a {
+.foot a:not(.button) {
   color: var(--gold);
 }
 
-.foot a:hover {
+.foot a:not(.button):hover {
   color: var(--cream);
+}
+
+.foot a.button,
+.foot a.button:hover {
+  color: var(--ink);
 }
 
 @media (min-width: 720px) {
